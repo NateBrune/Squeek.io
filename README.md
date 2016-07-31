@@ -1,6 +1,10 @@
 # Screem
 The first alternative social network to Steemit
 
+https://steemit.com/steem/@picokernel/pre-alpha-introducting-screem-the-first-alternative-social-network-for-steem 
+
+for more info
+
 ### What is Screem
 Screem is an alternative social network built on top of steem. Its aim is to clone twitter's functionality with all the economic incentives of steem.
 ### Setting up Screem client
