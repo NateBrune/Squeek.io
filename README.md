@@ -8,7 +8,8 @@ for more info
 
 ### What is Screem
 Screem is an alternative social network built on top of steem. Its aim is to clone twitter's functionality with all the economic incentives of steem.
-### Setting up Screem client
+
+### Setting up Screem cli client
 1. git clone https://github.com/NateBrune/Screem.git
 2. pip install curses-menu steem-piston
 3. get posting private key from https://steemit.com/@yourusername/permissions
@@ -17,6 +18,6 @@ Screem is an alternative social network built on top of steem. Its aim is to clo
 5. piston set default_voter yourusername
 
 ### Screenshots
-
+![https://ipfs.pics/ipfs/QmVQke5YnQLQoXGNmbuJXDD4SFTs2UUN5N6vRWybwS73s2](https://ipfs.pics/ipfs/QmVQke5YnQLQoXGNmbuJXDD4SFTs2UUN5N6vRWybwS73s2)
 ![https://ipfs.pics/ipfs/QmTMpemDaqs4n4MP2Ye34taJNQhQyhNhcw5VfKbP7JNRJU](https://ipfs.pics/ipfs/QmTMpemDaqs4n4MP2Ye34taJNQhQyhNhcw5VfKbP7JNRJU)
 ![https://ipfs.pics/ipfs/QmYaL2wfQrnkHdxTk4x3PKXHy52FDLmkk8np1dbB1HUpVg](https://ipfs.pics/ipfs/QmYaL2wfQrnkHdxTk4x3PKXHy52FDLmkk8np1dbB1HUpVg)
