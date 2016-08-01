@@ -56,7 +56,6 @@
     <a class="item" data-tab="fourth">Sign in</a>
   </div>
 </div>
-
 <div class="ui grid">
   <div class="two wide column"></div>
   <div class="twelve wide column">
@@ -65,56 +64,51 @@
         <input type="text" placeholder="Tell us how you really feel">
         <i class="send icon"></i>
       </div>
-      <div class="ui fluid card">
-        <div class="content">
-          <img class="right floated mini ui image" src="assets/pictures/default_profile.png">
-          <div class="header">
-            dan
-          </div>
-          <div class="meta">
-            Posted 34 seconds ago.
-          </div>
-          <div class="description">
-            Hey, this is pretty neat!
-          </div>
+
+      <?php
+      function get_data($url) {
+      	$ch = curl_init();
+      	$timeout = 5;
+      	curl_setopt($ch, CURLOPT_URL, $url);
+      	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+      	curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
+      	$data = curl_exec($ch);
+      	curl_close($ch);
+      	return $data;
+      }
+      $dat = get_data("https://api.steemjs.com/getState?path=/hot/steem");
+      $json = json_decode($dat, true);
+      foreach($json['content'] as $short){
+        //echo $short['title'].' '.$short['net_votes'].'<br />';
+        echo '
+        <div class="ui fluid card">
+          <div class="content">
+            <img class="right floated mini ui image" src="assets/pictures/default_profile.png">
+            <div class="header">
+            '.$short['author'].'
+            </div>
+            <div class="meta">
+              Posted 34 seconds ago.
+            </div>
+            <div class="description">
+        '.$short['title'].'
+        </div>
         </div>
         <div class="extra content">
-          <div class="basic right floated circular label"><i class="bitcoin icon"></i> 9K satoshis</div>
-          <div class="ui left floated labeled button" tabindex="0">
-            <div class="ui red mini button">
-              <i class="heart icon"></i> Like
-            </div>
-            <a class="ui basic red left pointing label">
-              1,995
-            </a>
+        <div class="basic right floated circular label"><i class="dollar icon"></i>'.$short['total_pending_payout_value'].'</div>
+        <div class="ui left floated labeled button" tabindex="0">
+          <div class="ui red mini button">
+            <i class="heart icon"></i> Like
           </div>
-        </div>
+          <a class="ui basic red left pointing label">
+        '.$short['net_votes'].'
+        </a>
       </div>
-      <div class="ui fluid card">
-        <div class="content">
-          <img class="right floated mini ui image" src="assets/pictures/default_profile.png">
-          <div class="header">
-            picokernel
-          </div>
-          <div class="meta">
-            Posted 2 minutes ago.
-          </div>
-          <div class="description">
-            Welcome to the platform everyone
-          </div>
-        </div>
-        <div class="extra content">
-          <div class="basic right floated circular label"><i class="bitcoin icon"></i> 13K satoshis</div>
-          <div class="ui left floated labeled button" tabindex="0">
-            <div class="ui red mini button">
-              <i class="heart icon"></i> Like
-            </div>
-            <a class="ui basic red left pointing label">
-              2,843
-            </a>
-          </div>
-        </div>
-      </div>
+    </div>
+  </div>
+        ';
+      }
+      ?>
       <div class="ui active centered inline loader"></div>
     </div>
 
