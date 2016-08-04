@@ -15,6 +15,7 @@
   <script src="steemjs-lib.min.js"></script>
   <script src="semantic/dist/semantic.js"></script>
   <script>
+
   $(document).ready(function(){
       $('.menu .item').tab();
   });
@@ -41,15 +42,13 @@
   <div class="item">
     <img src="assets/pictures/steemicon.png">
   </div>
-  <div class="left menu">
     <a class="item active" data-tab="first">Discover</a>
     <a class="item" data-tab="second">Feed</a>
     <a class="item" data-tab="third">Followers</a>
-  </div>
   <div class="right menu">
     <div class="item">
       <div class="ui icon transparent large input">
-        <input type="text" placeholder="Search">
+        <input type="text" placeholder="Search" id="search">
         <i class="search link icon"></i>
       </div>
     </div>
@@ -58,6 +57,21 @@
 </div>
 
 <script>
+$("#search").keyup(function(event){
+    if(event.keyCode == 13){ //enter key was pressed at search
+    }
+});
+
+$("#statusbox").keyup(function(event){ /// NOT WORKING, MAKES ME ANGRY
+    if(event.keyCode == 13){ //enter key was pressed at search
+    }
+});
+
+var loggedIn=false;
+var login = new window.steemJS.Login();
+login.setRoles(["posting"]);
+var posts = [];
+
 const options = {
     // user: "username",
     // pass: "password",
@@ -65,15 +79,13 @@ const options = {
     apis: ["database_api", "network_broadcast_api"],
     url: "wss://this.piston.rocks"
 };
-function login(){
+function steemlogin(){
   var username = document.getElementById("user").value;
   var password = document.getElementById("pass").value;
-  var login = new window.steemJS.Login();
   var Api = window.steemJS.steemRPC.Client.get(options, true);
   Api.initPromise.then(function(res){
     Api.database_api().exec("get_accounts", [[username]]).then(function(res) {
       var account = res[0];
-      login.setRoles(["posting"]);
       try{
         let success = login.checkKeys({
             accountName: username,
@@ -87,6 +99,7 @@ function login(){
               document.getElementById("errors").innerHTML = '<div class="ui green basic label">Success</div>';
               var atag = document.getElementById("loginButton");
               atag.parentNode.removeChild(atag);
+              loggedIn=true;
             }
             else{ // user entered the wrong credentials.
               document.getElementById("errors").innerHTML = '<div class="ui red basic label">Error: Incorrect username or password</div>';
@@ -98,46 +111,78 @@ function login(){
     });
   });
 }
+
+function vote(id){
+  var username = document.getElementById("user").value;
+  var password = document.getElementById("pass").value;
+  if(loggedIn){
+    $("#".concat(id).concat("card")).toggleClass("grey red");
+    $("#".concat(id)).toggleClass("grey red");
+    let tr = new window.steemJS.TransactionBuilder();
+    console.log(posts[id][id]);
+    tr.add_type_operation("vote", {
+        voter: username,
+        author: posts[id]['value'].split("/")[0],
+        permlink: posts[id]['value'].split("/")[1],
+        weight: 10000
+    });
+    tr.process_transaction(login, null, true);
+  }
+  else{
+    $('#'.concat(id)).html("log in first");
+  }
+}
+
+
 </script>
 
 <div class="ui grid">
   <div class="two wide column"></div>
   <div class="twelve wide column">
     <div class="ui tab active" data-tab="first">
-      <div class="ui fluid icon input testing">
-        <input type="text" placeholder="Tell us how you really feel">
+      <div class="ui fluid icon input grey" id="statusarea">
+        <input type="text" placeholder="Tell us how you really feel" id="statusbox">
         <i class="send icon"></i>
       </div>
       <script>
+      var id = 0;
+      //var posts = [];
+
       $.getJSON( "https://api.steemjs.com/getState?path=/hot/funny", function( data ) {
         $.each( data['content'], function( key, val ) {
-          $(".discovertweets").prepend('\
-          <div class="ui fluid card">\
+          posts.push({
+            key: id,
+            value: key
+          });
+          $(".discovertweets").append('\
+          <div class="ui grey fluid card" id="'.concat(id).concat('card">\
             <div class="content">\
-              <img class="right floated mini ui image" src="assets/pictures/default_profile.png">\
+              <!--<img class="right floated mini ui image" src="assets/pictures/default_profile.png">-->\
+              <button class="right floated ui grey mini icon button" id="').concat(id).concat('" onclick="vote(\'').concat(id).concat('\')"><i class="heart icon"></i></button>\
               <div class="header">\
-              '.concat(val['author']).concat('\
+              ').concat(val['author']).concat('\
               </div>\
               <div class="meta">\
                 Posted 34 seconds ago.\
               </div>\
               <div class="description">\
           ').concat(val['title']).concat('\
+          <div class="basic right floated label"><i class="dollar icon"></i>').concat(val['total_pending_payout_value']).concat('</div>\
           </div>\
           </div>\
-          <div class="extra content">\
-          <div class="basic right floated circular label"><i class="dollar icon"></i>').concat(val['total_pending_payout_value']).concat('</div>\
+          <!--<div class="extra content">\
           <div class="ui left floated labeled button" tabindex="0">\
-            <div class="ui red mini button">\
-              <i class="heart icon"></i> Like\
+            <!--<div class="ui grey mini button">\
+              <i class="heart icon"></i>Like\
             </div>\
-            <a class="ui basic red left pointing label">\
+            <a class="ui basic grey left pointing label">\
           ').concat(val['net_votes']).concat('\
           </a>\
-        </div>\
+        </div>-->\
         </div>\
         </div>\
           '));
+          id++;
         });
       });
       </script>
@@ -180,7 +225,7 @@ function login(){
               <div class="ui checkbox" id="errors">
               </div>
             </div>
-            <button class="ui button" type="button" onclick="login()">Login</button>
+            <button class="ui button" type="button" onclick="steemlogin()">Login</button>
           </form>
         </div>
       </div>
