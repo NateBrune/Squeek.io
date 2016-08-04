@@ -18,6 +18,8 @@ Screem is an alternative social network built on top of steem. Its aim is to clo
 5. piston set default_voter yourusername
 
 ### Screenshots
-![https://ipfs.pics/ipfs/QmVQke5YnQLQoXGNmbuJXDD4SFTs2UUN5N6vRWybwS73s2](https://ipfs.pics/ipfs/QmVQke5YnQLQoXGNmbuJXDD4SFTs2UUN5N6vRWybwS73s2)
-![https://ipfs.pics/ipfs/QmTMpemDaqs4n4MP2Ye34taJNQhQyhNhcw5VfKbP7JNRJU](https://ipfs.pics/ipfs/QmTMpemDaqs4n4MP2Ye34taJNQhQyhNhcw5VfKbP7JNRJU)
-![https://ipfs.pics/ipfs/QmYaL2wfQrnkHdxTk4x3PKXHy52FDLmkk8np1dbB1HUpVg](https://ipfs.pics/ipfs/QmYaL2wfQrnkHdxTk4x3PKXHy52FDLmkk8np1dbB1HUpVg)
+![https://ipfs.pics/ipfs/QmWW6HCMXsLm6tY94vz4fTrPqYNT7ZjXQukbsqwVVc8xeQ](https://ipfs.pics/ipfs/QmWW6HCMXsLm6tY94vz4fTrPqYNT7ZjXQukbsqwVVc8xeQ)
+![https://ipfs.pics/ipfs/QmVtDpov76S3nuGmJRGh2zD7zpNVJs4TqG24yvftZJjhih](https://ipfs.pics/ipfs/QmVtDpov76S3nuGmJRGh2zD7zpNVJs4TqG24yvftZJjhih)
+
+
+

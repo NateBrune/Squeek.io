@@ -37,8 +37,27 @@
   </style>
 </head>
 <body>
-<script>
+<div class="ui pointing borderless menu">
+  <div class="item">
+    <img src="assets/pictures/steemicon.png">
+  </div>
+  <div class="left menu">
+    <a class="item active" data-tab="first">Discover</a>
+    <a class="item" data-tab="second">Feed</a>
+    <a class="item" data-tab="third">Followers</a>
+  </div>
+  <div class="right menu">
+    <div class="item">
+      <div class="ui icon transparent large input">
+        <input type="text" placeholder="Search">
+        <i class="search link icon"></i>
+      </div>
+    </div>
+    <a class="item" data-tab="fourth" id="loginButton" >Sign in</a>
+  </div>
+</div>
 
+<script>
 const options = {
     // user: "username",
     // pass: "password",
@@ -46,7 +65,6 @@ const options = {
     apis: ["database_api", "network_broadcast_api"],
     url: "wss://this.piston.rocks"
 };
-
 function login(){
   var username = document.getElementById("user").value;
   var password = document.getElementById("pass").value;
@@ -81,26 +99,7 @@ function login(){
   });
 }
 </script>
-<div class="ui pointing borderless menu">
-  <div class="item">
-    <img src="assets/pictures/steemicon.png">
-  </div>
-  <div class="left menu">
-    <a class="item active" data-tab="first">Discover</a>
-    <a class="item" data-tab="second">Feed</a>
-    <a class="item" data-tab="third">Followers</a>
-  </div>
 
-  <div class="right menu">
-    <div class="item">
-      <div class="ui icon transparent large input">
-        <input type="text" placeholder="Search">
-        <i class="search link icon"></i>
-      </div>
-    </div>
-    <a class="item" data-tab="fourth" id="loginButton" >Sign in</a>
-  </div>
-</div>
 <div class="ui grid">
   <div class="two wide column"></div>
   <div class="twelve wide column">
