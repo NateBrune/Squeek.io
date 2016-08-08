@@ -7,19 +7,19 @@
 
   <!-- Site Properties -->
   <title>Screem</title>
-  <link rel="stylesheet" type="text/css" href="semantic/dist/semantic.css">
+  <link rel="stylesheet" type="text/css" href="semantic/dist/semantic.css" />
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.0/themes/base/jquery-ui.css">
 
   <link rel="shortcut icon" type="image/png" href="assets/pictures/steem.png"/>
 
   <script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.0/jquery-ui.min.js"></script>
   <script src="steemjs-lib.min.js"></script>
   <script src="semantic/dist/semantic.js"></script>
   <script>
-
   $(document).ready(function(){
       $('.menu .item').tab();
   });
-
   </script>
   <style>
     .last.container {
@@ -55,22 +55,16 @@
     <a class="item" data-tab="fourth" id="loginButton" >Sign in</a>
   </div>
 </div>
-
 <script>
-$("#search").keyup(function(event){
-    if(event.keyCode == 13){ //enter key was pressed at search
-    }
-});
-
-$("#statusbox").keyup(function(event){ /// NOT WORKING, MAKES ME ANGRY
-    if(event.keyCode == 13){ //enter key was pressed at search
-    }
-});
-
-var loggedIn=false;
+var username = "";
+var password = "";
+var loggedIn = false;
+var unbadazzled = true;
 var login = new window.steemJS.Login();
 login.setRoles(["posting"]);
 var posts = [];
+var sortedPosts = [];
+var num = 0;
 
 const options = {
     // user: "username",
@@ -79,9 +73,194 @@ const options = {
     apis: ["database_api", "network_broadcast_api"],
     url: "wss://this.piston.rocks"
 };
+
+function fetchDiscover(display){
+  posts = [];
+  num=0;
+  return $.getJSON( "https://api.steemjs.com/getState?path=/created/spam", function( data ) {
+    $.each( data['content'], function( key, val ) {
+        posts.push({
+          id: num,
+          value: val,
+          key: key
+        });
+        num++;
+    });
+    if(display){
+      redrawDiscover();
+    }
+  });
+}
+
+function sleep (time) {
+  return new Promise((resolve) => setTimeout(resolve, time));
+}
+
+function redrawDiscover(){
+  var fade = posts.length*200+200;
+  $(".discovertweets").empty(); // clear
+  sortedPosts=posts.slice();
+  sortedPosts.sort(function(a, b){ return new Date(a['value']['last_update']).getTime() - new Date(b['value']['last_update']).getTime()});
+  //console.log("Sorted Posts: ".concat(sortedPosts));
+  $.each(sortedPosts, function(index, value){
+    //console.log("Entered Each");
+    var text = '\
+    <div class="ui grey fluid card" id="'.concat(value['id']).concat('card" style="display: none;">\
+      <div class="content">\
+        <!--<img class="right floated mini ui image" src="assets/pictures/default_profile.png">-->\
+        <button class="right floated ui grey mini icon button" id="').concat(value['id']).concat('" onclick="vote(\'').concat(value['id']).concat('\')"><i class="heart icon"></i></button>\
+        <div class="header">\
+        ').concat(value['value']['author']).concat('\
+        </div>\
+        <div class="meta">\
+          ').concat(timeSince(new Date(value['value']['last_update']))).concat(' ago\
+        </div>\
+        <div class="description">\
+    ').concat(value['value']['title']).concat('\
+    <div class="basic right floated label"><i class="dollar icon"></i>').concat(value['value']['total_pending_payout_value']).concat('</div>\
+    </div>\
+    </div>\
+    <!--<div class="extra content">\
+    <div class="ui left floated labeled button" tabindex="0">\
+      <!--<div class="ui grey mini button">\
+        <i class="heart icon"></i>Like\
+      </div>\
+      <a class="ui basic grey left pointing label">\
+    ').concat(value['value']['net_votes']).concat('\
+    </a>\
+  </div>-->\
+  </div>\
+  </div>')
+    var $newdiv = $(text);
+    $('.discovertweets').prepend($newdiv);
+    if(unbadazzled){
+      var rand = Math.floor(Math.random()*1500)+300;
+      //console.log("badazzle em: ".concat(rand));
+      $newdiv.fadeIn(fade);
+      fade=fade-200;
+      //$newdiv.toggle("highlight",{color: "eee"}, rand);
+      //$newdiv.animate({backgroundColor: "#fff000" }, rand/2);
+    }
+    else{
+      $newdiv.fadeIn(500);
+    }
+    $.each(value['value']['active_votes'], function (key, val){
+      if(loggedIn && val['voter'] == username){
+        //console.log(value['id']);
+        $("#".concat(value['id']).concat("card")).toggleClass("grey red");
+        $("#".concat(value['id'])).toggleClass("grey red");
+      }
+    });
+  });
+  unbadazzled = false; // don't want to kill them with awesomeness
+}
+function reloadDiscover(){
+  fetchDiscover(true);
+}
+$('[data-tab="first"]').on('click', reloadDiscover);
+
+$("#search").keyup(function(event){
+    if(event.keyCode == 13){ //enter key was pressed at search
+    }
+});
+
+
+function removeChars(validChars, inputString) {
+    var regex = new RegExp('[^' + validChars + ']', 'g');
+    return inputString.replace(regex, '');
+}
+
+function timeSince(date) {
+
+    var seconds = Math.floor((new Date() - date) / 1000);
+
+    var interval = Math.floor(seconds / 31536000);
+
+    if (interval > 1) {
+        return interval + " years";
+    }
+    interval = Math.floor(seconds / 2592000);
+    if (interval > 1) {
+        return interval + " months";
+    }
+    interval = Math.floor(seconds / 86400);
+    if (interval > 1) {
+        return interval + " days";
+    }
+    interval = Math.floor(seconds / 3600);
+    if (interval > 1) {
+        return interval + " hours";
+    }
+    interval = Math.floor(seconds / 60);
+    if (interval > 1) {
+        return interval + " minutes";
+    }
+    return Math.floor(seconds) + " seconds";
+}
+
+function updatestatus(ele){
+  if(event.keyCode == 13) {
+    if(loggedIn){
+      var username = document.getElementById("user").value;
+      var password = document.getElementById("pass").value;
+      let tr = new window.steemJS.TransactionBuilder();
+      var thewordofgod = ele.value;
+      var permlink = removeChars('abcdefghijklmnopqrstuvwxyz1234567890-',ele.value.slice(0,20).replace(" ", "-"))
+      //console.log(removeChars('abcdefghijklmnopqrstuvwxyz1234567890-',ele.value.slice(0,20).replace(" ", "-")));
+      //console.log('{"tags":["spam"], "created":"'.concat(Math.round(+new Date()/1000).toString()).concat('", "used-by":"peek"}'));
+      try{
+        tr.add_type_operation("comment", {
+          parent_author: "",
+          parent_permlink: "spam",
+          author: username,
+          permlink: permlink,
+          title: ele.value,
+          body: ele.value.concat(" CREATED BY PEEK V0.1"),
+          json_metadata: '{"tags":["spam"], "created":"'.concat(Math.round(+new Date()/1000).toString()).concat('", "used-by":"peek"}')
+        });
+        tr.process_transaction(login, null, true);
+        tr.add_type_operation("vote", {
+            voter: username,
+            author: username,
+            permlink: permlink,
+            weight: 10000
+        });
+        tr.process_transaction(login, null, true);
+        document.getElementById("statusbox").value = "";
+        var $newdiv = $('\
+        <div class="ui red fluid card" style="display: none;">\
+          <div class="content">\
+            <!--<img class="right floated mini ui image" src="assets/pictures/default_profile.png">-->\
+            <button class="right floated ui red mini icon button"><i class="heart icon"></i></button>\
+            <div class="header">\
+            '.concat(username).concat('\
+            </div>\
+            <div class="meta">\
+              Just now\
+            </div>\
+            <div class="description">\
+            ').concat(thewordofgod).concat('\
+        <div class="basic right floated label"><i class="dollar icon"></i>$0.00 SBD</div>\
+        </div>\
+        </div>\
+      </div>\
+      </div>\
+        '));
+        $('.discovertweets').prepend($newdiv);
+        $newdiv.fadeIn(1000);
+      }
+      catch(err){
+        $('#discoverarea').prepend('<div class="ui pointing below red label" id="login-nag">'.concat(err).concat('</div>'));
+      }
+    }
+    else{
+      $('#discoverarea').prepend('<div class="ui pointing below red label" id="login-nag">Please log in first</div>');
+    }
+  }
+}
 function steemlogin(){
-  var username = document.getElementById("user").value;
-  var password = document.getElementById("pass").value;
+  username = document.getElementById("user").value;
+  password = document.getElementById("pass").value;
   var Api = window.steemJS.steemRPC.Client.get(options, true);
   Api.initPromise.then(function(res){
     Api.database_api().exec("get_accounts", [[username]]).then(function(res) {
@@ -99,6 +278,7 @@ function steemlogin(){
               document.getElementById("errors").innerHTML = '<div class="ui green basic label">Success</div>';
               var atag = document.getElementById("loginButton");
               atag.parentNode.removeChild(atag);
+              $('#login-nag').remove();
               loggedIn=true;
             }
             else{ // user entered the wrong credentials.
@@ -119,11 +299,10 @@ function vote(id){
     $("#".concat(id).concat("card")).toggleClass("grey red");
     $("#".concat(id)).toggleClass("grey red");
     let tr = new window.steemJS.TransactionBuilder();
-    console.log(posts[id][id]);
     tr.add_type_operation("vote", {
         voter: username,
-        author: posts[id]['value'].split("/")[0],
-        permlink: posts[id]['value'].split("/")[1],
+        author: posts[id]['key'].split("/")[0],
+        permlink: posts[id]['key'].split("/")[1],
         weight: 10000
     });
     tr.process_transaction(login, null, true);
@@ -133,59 +312,16 @@ function vote(id){
   }
 }
 
-
+reloadDiscover();
 </script>
-
 <div class="ui grid">
   <div class="two wide column"></div>
   <div class="twelve wide column">
-    <div class="ui tab active" data-tab="first">
+    <div class="ui tab active" data-tab="first" id="discoverarea">
       <div class="ui fluid icon input grey" id="statusarea">
-        <input type="text" placeholder="Tell us how you really feel" id="statusbox">
+        <input type="text" placeholder="Tell us how you really feel" id="statusbox" onkeyup="updatestatus(this)">
         <i class="send icon"></i>
       </div>
-      <script>
-      var id = 0;
-      //var posts = [];
-
-      $.getJSON( "https://api.steemjs.com/getState?path=/hot/funny", function( data ) {
-        $.each( data['content'], function( key, val ) {
-          posts.push({
-            key: id,
-            value: key
-          });
-          $(".discovertweets").append('\
-          <div class="ui grey fluid card" id="'.concat(id).concat('card">\
-            <div class="content">\
-              <!--<img class="right floated mini ui image" src="assets/pictures/default_profile.png">-->\
-              <button class="right floated ui grey mini icon button" id="').concat(id).concat('" onclick="vote(\'').concat(id).concat('\')"><i class="heart icon"></i></button>\
-              <div class="header">\
-              ').concat(val['author']).concat('\
-              </div>\
-              <div class="meta">\
-                Posted 34 seconds ago.\
-              </div>\
-              <div class="description">\
-          ').concat(val['title']).concat('\
-          <div class="basic right floated label"><i class="dollar icon"></i>').concat(val['total_pending_payout_value']).concat('</div>\
-          </div>\
-          </div>\
-          <!--<div class="extra content">\
-          <div class="ui left floated labeled button" tabindex="0">\
-            <!--<div class="ui grey mini button">\
-              <i class="heart icon"></i>Like\
-            </div>\
-            <a class="ui basic grey left pointing label">\
-          ').concat(val['net_votes']).concat('\
-          </a>\
-        </div>-->\
-        </div>\
-        </div>\
-          '));
-          id++;
-        });
-      });
-      </script>
       <br />
       <div class="discovertweets">
 
@@ -232,8 +368,6 @@ function vote(id){
     </div>
   <div class="two wide column"></div>
 </div>
-
-
 
 
 </body>
