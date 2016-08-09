@@ -13,7 +13,6 @@
   <link rel="shortcut icon" type="image/png" href="assets/pictures/steem.png"/>
 
   <script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
-  <script src="https://code.jquery.com/ui/1.12.0/jquery-ui.min.js"></script>
   <script src="steemjs-lib.min.js"></script>
   <script src="semantic/dist/semantic.js"></script>
   <script>
@@ -77,7 +76,7 @@ const options = {
 function fetchDiscover(display){
   posts = [];
   num=0;
-  return $.getJSON( "https://api.steemjs.com/getState?path=/created/spam", function( data ) {
+  return $.getJSON( "https://api.steemjs.com/getState?path=/created/screem", function( data ) {
     $.each( data['content'], function( key, val ) {
         posts.push({
           id: num,
@@ -97,10 +96,10 @@ function sleep (time) {
 }
 
 function redrawDiscover(){
-  var fade = posts.length*200+200;
+  var fade = posts.length*200+200; // posts are added in reverse order... its complicated
   $(".discovertweets").empty(); // clear
-  sortedPosts=posts.slice();
-  sortedPosts.sort(function(a, b){ return new Date(a['value']['last_update']).getTime() - new Date(b['value']['last_update']).getTime()});
+  sortedPosts=posts.slice(); // sortedPosts = posts
+  sortedPosts.sort(function(a, b){ return new Date(a['value']['last_update']).getTime() - new Date(b['value']['last_update']).getTime()}); // sort by date
   //console.log("Sorted Posts: ".concat(sortedPosts));
   $.each(sortedPosts, function(index, value){
     //console.log("Entered Each");
@@ -211,12 +210,12 @@ function updatestatus(ele){
       try{
         tr.add_type_operation("comment", {
           parent_author: "",
-          parent_permlink: "spam",
+          parent_permlink: "screem",
           author: username,
           permlink: permlink,
           title: ele.value,
-          body: ele.value.concat(" CREATED BY PEEK V0.1"),
-          json_metadata: '{"tags":["spam"], "created":"'.concat(Math.round(+new Date()/1000).toString()).concat('", "used-by":"peek"}')
+          body: ele.value.concat(" CREATED BY SCREEM V0.1"),
+          json_metadata: '{"tags":["screem"], "created":"'.concat(Math.round(+new Date()/1000).toString()).concat('", "used-by":"screem"}')
         });
         tr.process_transaction(login, null, true);
         tr.add_type_operation("vote", {
