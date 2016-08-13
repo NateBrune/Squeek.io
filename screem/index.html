@@ -135,6 +135,14 @@ var sortedPosts = [];
 var num = 0;
 var loginhtml = $("#loginSettings").html();
 
+
+function linkify(text) {
+    var urlRegex =/(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+    return text.replace(urlRegex, function(url) {
+        return '<a href="' + url + '">' + url + '</a>';
+    });
+}
+
 const options = {
     // user: "username",
     // pass: "password",
@@ -237,7 +245,7 @@ function redrawArea(div){
           ').concat(timeSince(new Date(value['value']['last_update']))).concat(' ago\
         </div> -->\
         <div class="description">\
-    ').concat(value['value']['title']).concat('\
+    ').concat(linkify(value['value']['title'])).concat('\
     <div class="basic right floated label"><i class="dollar icon"></i>').concat(value['value']['total_pending_payout_value']).concat('</div>\
     </div>\
     </div>\
@@ -337,7 +345,7 @@ function updatestatus(ele, e){
           author: username,
           permlink: permlink,
           title: ele.value,
-          body: ele.value.concat(" CREATED BY SCREEM V0.1"),
+          body: ele.value.concat(" CREATED BY SCREEM V0.2 https://steemit.com/steem/@picokernel/alpha-v2-introducing-screem-feeds-followers-settings-oh-my"),
           json_metadata: '{"tags":["screem"], "created":"'.concat(Math.round(+new Date()/1000).toString()).concat('", "used-by":"screem"}')
         });
         tr.process_transaction(login, null, true);
@@ -390,7 +398,7 @@ function populateFollowers(){
           <div class="right floated content">\
             <div class="ui mini button">Follow Back</div>\
           </div>\
-          <img class="ui avatar image" src="/assets/pictures/default_profile.png">\
+          <img class="ui avatar image" src="assets/pictures/default_profile.png">\
           <div class="content">\
             '.concat(val['follower']).concat('\
           </div>\
