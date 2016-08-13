@@ -382,7 +382,7 @@ function updatestatus(ele, e){
   }
 }
 function populateFollowers(){
-  $.getJSON( "http://api.steemjs.com/getFollowers?following=".concat(username).concat("&startFollower=0&limit=100&followType=blog"), function( data ) {
+  $.getJSON( "https://api.steemjs.com/getFollowers?following=".concat(username).concat("&startFollower=0&limit=100&followType=blog"), function( data ) {
     $.each( data, function( index, val ) {
       //console.log(val);
       $("#followers").append('\
