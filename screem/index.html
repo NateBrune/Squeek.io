@@ -12,8 +12,9 @@
 
   <link rel="shortcut icon" type="image/png" href="assets/pictures/steem.png"/>
 
-  <script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
-  <script src="steemjs-lib.min.js"></script>
+  <script src="javascript/jquery-3.1.0.min.js"></script>
+  <script src="//code.jquery.com/ui/1.12.0/jquery-ui.min.js"></script>
+  <script src="javascript/steemjs-lib.min.js"></script>
   <script src="semantic/dist/semantic.js"></script>
   <script>
   $(document).ready(function(){
@@ -38,12 +39,12 @@
 </head>
 <body>
 <div class="ui pointing borderless menu">
-  <div class="item">
-    <img src="assets/pictures/steemicon.png">
+  <div class="item" data-tab="fourth" id="loginButton">
+    <img src="assets/pictures/login_off.svg">
   </div>
     <a class="item active" data-tab="first">Discover</a>
     <a class="item" data-tab="second">Feed</a>
-    <a class="item" data-tab="third">Followers</a>
+    <a class="item" data-tab="third">Story</a>
   <div class="right menu">
     <div class="item">
       <div class="ui icon transparent large input">
@@ -51,9 +52,77 @@
         <i class="search link icon"></i>
       </div>
     </div>
-    <a class="item" data-tab="fourth" id="loginButton" >Sign in</a>
   </div>
 </div>
+<div class="ui grid">
+  <div class="two wide column"></div>
+  <div class="twelve wide column">
+    <div class="ui tab active" data-tab="first" id="discoverarea">
+      <div class="ui fluid icon input grey" id="statusarea">
+        <input type="text" placeholder="Tell us how you really feel" id="statusbox" onkeyup="updatestatus(this, event)">
+        <i class="send icon"></i>
+      </div>
+      <br />
+      <div class="discovertweets">
+
+      </div>
+      <!--<div class="ui active centered inline loader"></div>-->
+    </div>
+
+    <div class="ui tab" data-tab="second" id="feedarea">
+      <div class="ui fluid icon input grey" id="statusarea">
+        <input type="text" placeholder="Tell us how you really feel" id="statusbox" onkeyup="updatestatus(this, event)">
+        <i class="send icon"></i>
+      </div>
+      </br>
+      <div class="feedtweets">
+        <div class="ui grey fluid card">
+          <div class="content" id="feedcontent">
+            Please login first.
+          </div>
+      </div>
+    </div>
+  </div>
+
+    <div class="ui tab" data-tab="third">
+      <div class="ui fluid icon input grey" id="statusarea">
+        <input type="text" placeholder="Tell us how you really feel" id="statusbox" onkeyup="updatestatus(this, event)">
+        <i class="send icon"></i>
+      </div>
+      </br>
+      <div class="storytweets">
+        <div class="ui grey fluid card">
+          <div class="content" id ="storycontent">
+            Please login first. Also don't bother logging in because this page doesn't work yet.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ui tab" data-tab="fourth">
+      <div class="ui fluid card">
+        <div class="content" id="loginSettings">
+          <form class="ui form">
+            <div class="field">
+              <label>Username</label>
+              <input type="text" id="user" placeholder="Username">
+            </div>
+            <div class="field">
+              <label>Password</label>
+              <input type="password" id="pass" placeholder="Password">
+            </div>
+            <div class="field">
+              <div class="ui checkbox" id="errors">
+              </div>
+            </div>
+            <button class="ui button" type="button" onclick="steemlogin()">Login</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  <div class="two wide column"></div>
+</div>
+
 <script>
 var username = "";
 var password = "";
@@ -64,19 +133,24 @@ login.setRoles(["posting"]);
 var posts = [];
 var sortedPosts = [];
 var num = 0;
+var loginhtml = $("#loginSettings").html();
 
 const options = {
     // user: "username",
     // pass: "password",
     // url: "ws://127.0.0.1:8090",
     apis: ["database_api", "network_broadcast_api"],
-    url: "wss://this.piston.rocks"
+    url: "wss://node.steem.ws"
 };
+
+function sleep (time) {
+  return new Promise((resolve) => setTimeout(resolve, time));
+}
 
 function fetchDiscover(display){
   posts = [];
   num=0;
-  return $.getJSON( "https://api.steemjs.com/getState?path=/created/screem", function( data ) {
+  return $.getJSON( "https://api.steemjs.com/getState?path=/trending/screem", function( data ) {
     $.each( data['content'], function( key, val ) {
         posts.push({
           id: num,
@@ -86,21 +160,56 @@ function fetchDiscover(display){
         num++;
     });
     if(display){
-      redrawDiscover();
+      redrawArea('.discovertweets');
     }
   });
 }
 
-function sleep (time) {
-  return new Promise((resolve) => setTimeout(resolve, time));
+function fetchFeed(display){
+  posts = [];
+  num=0;
+  return $.getJSON( "https://api.steemjs.com/getState?path=/@".concat(username).concat("/feed&scope=content"), function( data ) {
+    $.each( data, function( key, val ) {
+      if(JSON.parse(val['json_metadata'])['tags'].includes("screem")){
+        posts.push({
+          id: num,
+          value: val,
+          key: key
+        });
+        num++;
+      }
+    });
+    if(display){
+      redrawArea(".feedtweets");
+    }
+  });
 }
 
-function redrawDiscover(){
+function fetchStory(display){
+  posts = [];
+  num=0;
+  return $.getJSON( "https://api.steemjs.com/getState?path=/@".concat(username), function( data ) {
+    $.each( data['content'], function( key, val ) {
+      if(JSON.parse(val['json_metadata'])['tags'].includes("screem")){
+        posts.push({
+          id: num,
+          value: val,
+          key: key
+        });
+        num++;
+      }
+    });
+    if(display){
+      redrawArea(".storytweets");
+    }
+  });
+}
+function redrawArea(div){
   var fade = posts.length*200+200; // posts are added in reverse order... its complicated
-  $(".discovertweets").empty(); // clear
   sortedPosts=posts.slice(); // sortedPosts = posts
   sortedPosts.sort(function(a, b){ return new Date(a['value']['last_update']).getTime() - new Date(b['value']['last_update']).getTime()}); // sort by date
   //console.log("Sorted Posts: ".concat(sortedPosts));
+  $(div).empty(); // clear
   $.each(sortedPosts, function(index, value){
     //console.log("Entered Each");
     var text = '\
@@ -108,12 +217,25 @@ function redrawDiscover(){
       <div class="content">\
         <!--<img class="right floated mini ui image" src="assets/pictures/default_profile.png">-->\
         <button class="right floated ui grey mini icon button" id="').concat(value['id']).concat('" onclick="vote(\'').concat(value['id']).concat('\')"><i class="heart icon"></i></button>\
-        <div class="header">\
-        ').concat(value['value']['author']).concat('\
+        <div class="ui horizontal list">\
+        <div class="item" onclick="showControls(').concat(value['id']).concat(')">\
+          <img class="ui mini circular image" src="assets/pictures/default_profile.png">\
+          <div class="content" style="padding-right: 1em;">\
+            <div class="ui sub header">').concat(value['value']['author']).concat('</div>\
+            ').concat(timeSince(new Date(value['value']['last_update']))).concat(' ago</div>\
         </div>\
+        <a style="display: none;" class="ui tiny label ').concat(value['id']).concat('header" id="').concat(value['id']).concat('header" onclick="follow(').concat(value['id']).concat(')"><i class="Pied Piper Hat icon"></i> Follow</a>\
+        <a style="display: none;" class="ui tiny label ').concat(value['id']).concat('header" id="').concat(value['id']).concat('header" onclick="hide(').concat(value['id']).concat(')"><i class="hide icon"></i> Hide</a>\
+        </div>\
+        <!--\
+        <p onclick="showControls(').concat(value['id']).concat(')">').concat(value['value']['author']).concat('\
+          <a style="display: none;" class="ui tiny label ').concat(value['id']).concat('header" id="').concat(value['id']).concat('header" onclick="follow(').concat(value['id']).concat(')"><i class="Pied Piper Hat icon"></i> Follow</a>\
+          <a style="display: none;" class="ui tiny label ').concat(value['id']).concat('header" id="').concat(value['id']).concat('header" onclick="hide(').concat(value['id']).concat(')"><i class="hide icon"></i> Hide</a>\
+        </div>\
+        \
         <div class="meta">\
           ').concat(timeSince(new Date(value['value']['last_update']))).concat(' ago\
-        </div>\
+        </div> -->\
         <div class="description">\
     ').concat(value['value']['title']).concat('\
     <div class="basic right floated label"><i class="dollar icon"></i>').concat(value['value']['total_pending_payout_value']).concat('</div>\
@@ -131,18 +253,9 @@ function redrawDiscover(){
   </div>\
   </div>')
     var $newdiv = $(text);
-    $('.discovertweets').prepend($newdiv);
-    if(unbadazzled){
-      var rand = Math.floor(Math.random()*1500)+300;
-      //console.log("badazzle em: ".concat(rand));
-      $newdiv.fadeIn(fade);
-      fade=fade-200;
-      //$newdiv.toggle("highlight",{color: "eee"}, rand);
-      //$newdiv.animate({backgroundColor: "#fff000" }, rand/2);
-    }
-    else{
-      $newdiv.fadeIn(500);
-    }
+    $(div).prepend($newdiv);
+    $newdiv.fadeIn(fade);
+    fade=fade-200;
     $.each(value['value']['active_votes'], function (key, val){
       if(loggedIn && val['voter'] == username){
         //console.log(value['id']);
@@ -151,12 +264,24 @@ function redrawDiscover(){
       }
     });
   });
-  unbadazzled = false; // don't want to kill them with awesomeness
 }
+
 function reloadDiscover(){
   fetchDiscover(true);
 }
-$('[data-tab="first"]').on('click', reloadDiscover);
+function reloadFeed(){
+  if(loggedIn){
+    fetchFeed(true);
+  }
+}
+function reloadStory(){
+  if(loggedIn){
+    fetchStory(true);
+  }
+}
+$('[data-tab="first"][class="item"]').on('click', reloadDiscover);
+$('[data-tab="second"][class="item"]').on('click', reloadFeed);
+$('[data-tab="third"][class="item"]').on('click', reloadStory);
 
 $("#search").keyup(function(event){
     if(event.keyCode == 13){ //enter key was pressed at search
@@ -197,11 +322,9 @@ function timeSince(date) {
     return Math.floor(seconds) + " seconds";
 }
 
-function updatestatus(ele){
-  if(event.keyCode == 13) {
+function updatestatus(ele, e){
+  if(e.keyCode == 13) {
     if(loggedIn){
-      var username = document.getElementById("user").value;
-      var password = document.getElementById("pass").value;
       let tr = new window.steemJS.TransactionBuilder();
       var thewordofgod = ele.value;
       var permlink = removeChars('abcdefghijklmnopqrstuvwxyz1234567890-',ele.value.slice(0,20).replace(" ", "-"))
@@ -246,6 +369,7 @@ function updatestatus(ele){
       </div>\
         '));
         $('.discovertweets').prepend($newdiv);
+        $('.feedtweets').prepend($newdiv);
         $newdiv.fadeIn(1000);
       }
       catch(err){
@@ -257,9 +381,50 @@ function updatestatus(ele){
     }
   }
 }
+function populateFollowers(){
+  $.getJSON( "http://api.steemjs.com/getFollowers?following=".concat(username).concat("&startFollower=0&limit=100&followType=blog"), function( data ) {
+    $.each( data, function( index, val ) {
+      //console.log(val);
+      $("#followers").append('\
+      <div class="item">\
+          <div class="right floated content">\
+            <div class="ui mini button">Follow Back</div>\
+          </div>\
+          <img class="ui avatar image" src="/assets/pictures/default_profile.png">\
+          <div class="content">\
+            '.concat(val['follower']).concat('\
+          </div>\
+        </div>\
+      '));
+    }); // Each
+  }); // GetJson
+}
+function steemlogout(){
+  login = new window.steemJS.Login();
+  $("#loginSettings").html(loginhtml); // reset form.
+  $("#loginButton").html('<img src="assets/pictures/login_off.svg">');
+  localStorage.removeItem("username");
+  localStorage.removeItem("password");
+}
 function steemlogin(){
-  username = document.getElementById("user").value;
-  password = document.getElementById("pass").value;
+  var loginSettingsHtml = '\
+  <center><h2 class="ui header">Followers</h2></center><div class="ui middle aligned divided list" id="followers"></div>\
+  <div class="ui divider"></div>\
+  <center><button class="ui center button" type="button" onclick="steemlogout()">Log out</button></center>\
+  '
+  localStorage.setItem("loggedOut", "true");
+  if (localStorage.getItem("username") === null && document.getElementById("user").value !== "") { // check if input box if filled in
+    username = document.getElementById("user").value;
+    password = document.getElementById("pass").value;
+  }
+  else if(localStorage.getItem("username") !== null){
+    username = localStorage.getItem("username");
+    password = localStorage.getItem("password");
+  }
+  else{
+    //console.log("Got loggedOut at else");
+    return; // we are not logging in today...
+  }
   var Api = window.steemJS.steemRPC.Client.get(options, true);
   Api.initPromise.then(function(res){
     Api.database_api().exec("get_accounts", [[username]]).then(function(res) {
@@ -275,9 +440,14 @@ function steemlogin(){
             }});
             if(success){ // we're in.
               document.getElementById("errors").innerHTML = '<div class="ui green basic label">Success</div>';
-              var atag = document.getElementById("loginButton");
-              atag.parentNode.removeChild(atag);
+              $("#loginButton").html('<img src="assets/pictures/login_on.svg">');
+              $("#loginSettings").html(loginSettingsHtml);
+              if(localStorage.getItem("username") === null){
+                localStorage.setItem("username", username); //save it all
+                localStorage.setItem("password", password);
+              }
               $('#login-nag').remove();
+              populateFollowers();
               loggedIn=true;
             }
             else{ // user entered the wrong credentials.
@@ -290,10 +460,35 @@ function steemlogin(){
     });
   });
 }
+function follow(id){
+  if(true){
+    alert("This feature is currently disabled cause it's broken. Like grammy.");
+    //disabled until it works
+  }
+  else{
+    if(loggedIn){
+      //console.log("{\"follower\":\"".concat(username).concat('\", \"following\":\"').concat(posts[id]['key'].split("/")[0]).concat('\",what:[\"blog\"]}'));
+      try{
+        $("#".concat(id).concat("card")).toggleClass("grey red");
+        $("#".concat(id)).toggleClass("grey red");
+        let tr = new window.steemJS.TransactionBuilder();
+        tr.add_type_operation("custom_json", {
+            id: "follow",
+            json: "{\"follower\":\"".concat(username).concat('\", \"following\":\"').concat(posts[id]['key'].split("/")[0]).concat('\",what:[\"blog\"]}')
+        });
+        tr.process_transaction(login, null, true);
+      }
+      catch(err){
+        $('#'.concat(id)).html(err.message);
+      }
 
+    }
+    else{
+      $('#'.concat(id)).html("log in first");
+    }
+  }
+}
 function vote(id){
-  var username = document.getElementById("user").value;
-  var password = document.getElementById("pass").value;
   if(loggedIn){
     $("#".concat(id).concat("card")).toggleClass("grey red");
     $("#".concat(id)).toggleClass("grey red");
@@ -310,64 +505,16 @@ function vote(id){
     $('#'.concat(id)).html("log in first");
   }
 }
+function showControls(id){
+  $('.'.concat(id).concat('header')).toggle();
+}
 
-reloadDiscover();
+function initsite(){
+  steemlogin();
+  reloadDiscover();
+}
+
+initsite();
 </script>
-<div class="ui grid">
-  <div class="two wide column"></div>
-  <div class="twelve wide column">
-    <div class="ui tab active" data-tab="first" id="discoverarea">
-      <div class="ui fluid icon input grey" id="statusarea">
-        <input type="text" placeholder="Tell us how you really feel" id="statusbox" onkeyup="updatestatus(this)">
-        <i class="send icon"></i>
-      </div>
-      <br />
-      <div class="discovertweets">
-
-      </div>
-      <!--<div class="ui active centered inline loader"></div>-->
-    </div>
-
-    <div class="ui tab" data-tab="second">
-      <div class="ui fluid card">
-        <div class="content">
-          Second
-        </div>
-      </div>
-    </div>
-
-    <div class="ui tab" data-tab="third">
-      <div class="ui fluid card">
-        <div class="content">
-          Third
-        </div>
-      </div>
-    </div>
-
-    <div class="ui tab" data-tab="fourth">
-      <div class="ui fluid card">
-        <div class="content">
-          <form class="ui form">
-            <div class="field">
-              <label>Username</label>
-              <input type="text" id="user" placeholder="Username">
-            </div>
-            <div class="field">
-              <label>Password</label>
-              <input type="password" id="pass" placeholder="Password">
-            </div>
-            <div class="field">
-              <div class="ui checkbox" id="errors">
-              </div>
-            </div>
-            <button class="ui button" type="button" onclick="steemlogin()">Login</button>
-          </form>
-        </div>
-      </div>
-    </div>
-  <div class="two wide column"></div>
-</div>
-
-
 </body>
 </html>
