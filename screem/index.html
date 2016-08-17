@@ -1,528 +1,582 @@
 <html>
+
 <head>
-  <!-- Standard Meta -->
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <!-- Standard Meta -->
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 
-  <!-- Site Properties -->
-  <title>Screem</title>
-  <link rel="stylesheet" type="text/css" href="semantic/dist/semantic.css" />
-  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.0/themes/base/jquery-ui.css">
+    <!-- Site Properties -->
+    <title>Screem</title>
+    <link rel="stylesheet" type="text/css" href="semantic/dist/semantic.css" />
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.0/themes/base/jquery-ui.css">
 
-  <link rel="shortcut icon" type="image/png" href="assets/pictures/steem.png"/>
+    <link rel="shortcut icon" type="image/png" href="assets/pictures/steem.png" />
 
-  <script src="javascript/jquery-3.1.0.min.js"></script>
-  <script src="//code.jquery.com/ui/1.12.0/jquery-ui.min.js"></script>
-  <script src="javascript/steemjs-lib.min.js"></script>
-  <script src="semantic/dist/semantic.js"></script>
-  <script>
-  $(document).ready(function(){
-      $('.menu .item').tab();
-  });
-  </script>
-  <style>
-    .last.container {
-      margin-bottom: 300px !important;
-    }
-    h1.ui.center.header {
-      margin-top: 3em;
-    }
-    h2.ui.center.header {
-      margin: 4em 0em 2em;
-    }
-    h3.ui.center.header {
-      margin-top: 2em;
-      padding: 2em 0em;
-    }
-  </style>
+    <script src="javascript/jquery-3.1.0.min.js"></script>
+    <script src="//code.jquery.com/ui/1.12.0/jquery-ui.min.js"></script>
+    <script src="javascript/steemjs-lib.min.js"></script>
+    <script src="semantic/dist/semantic.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.menu .item').tab();
+        });
+    </script>
+    <style>
+        .last.container {
+            margin-bottom: 300px !important;
+        }
+
+        h1.ui.center.header {
+            margin-top: 3em;
+        }
+
+        h2.ui.center.header {
+            margin: 4em 0em 2em;
+        }
+
+        h3.ui.center.header {
+            margin-top: 2em;
+            padding: 2em 0em;
+        }
+    </style>
 </head>
+
 <body>
-<div class="ui pointing borderless menu">
-  <div class="item" data-tab="fourth" id="loginButton">
-    <img src="assets/pictures/login_off.svg">
-  </div>
-    <a class="item active" data-tab="first">Discover</a>
-    <a class="item" data-tab="second">Feed</a>
-    <a class="item" data-tab="third">Story</a>
-  <div class="right menu">
-    <div class="item">
-      <div class="ui icon transparent large input">
-        <input type="text" placeholder="Search" id="search">
-        <i class="search link icon"></i>
-      </div>
-    </div>
-  </div>
-</div>
-<div class="ui grid">
-  <div class="two wide column"></div>
-  <div class="twelve wide column">
-    <div class="ui tab active" data-tab="first" id="discoverarea">
-      <div class="ui fluid icon input grey" id="statusarea">
-        <input type="text" placeholder="Tell us how you really feel" id="statusbox" onkeyup="updatestatus(this, event)">
-        <i class="send icon"></i>
-      </div>
-      <br />
-      <div class="discovertweets">
-
-      </div>
-      <!--<div class="ui active centered inline loader"></div>-->
-    </div>
-
-    <div class="ui tab" data-tab="second" id="feedarea">
-      <div class="ui fluid icon input grey" id="statusarea">
-        <input type="text" placeholder="Tell us how you really feel" id="statusbox" onkeyup="updatestatus(this, event)">
-        <i class="send icon"></i>
-      </div>
-      </br>
-      <div class="feedtweets">
-        <div class="ui grey fluid card">
-          <div class="content" id="feedcontent">
-            Please login first.
-          </div>
-      </div>
-    </div>
-  </div>
-
-    <div class="ui tab" data-tab="third">
-      <div class="ui fluid icon input grey" id="statusarea">
-        <input type="text" placeholder="Tell us how you really feel" id="statusbox" onkeyup="updatestatus(this, event)">
-        <i class="send icon"></i>
-      </div>
-      </br>
-      <div class="storytweets">
-        <div class="ui grey fluid card">
-          <div class="content" id ="storycontent">
-            Please login first. Also don't bother logging in because this page doesn't work yet.
-          </div>
+    <div class="ui pointing borderless menu">
+        <div class="item" data-tab="fourth" id="loginButton">
+            <img src="assets/pictures/login_off.svg">
         </div>
-      </div>
-    </div>
-
-    <div class="ui tab" data-tab="fourth">
-      <div class="ui fluid card">
-        <div class="content" id="loginSettings">
-          <form class="ui form">
-            <div class="field">
-              <label>Username</label>
-              <input type="text" id="user" placeholder="Username">
+        <a class="item active" data-tab="first">Discover</a>
+        <a class="item" data-tab="second">Feed</a>
+        <a class="item" data-tab="third">Story</a>
+        <div class="right menu">
+            <div class="item">
+                <div class="ui icon transparent large input">
+                    <input type="text" placeholder="Search" id="search">
+                    <i class="search link icon"></i>
+                </div>
             </div>
-            <div class="field">
-              <label>Password</label>
-              <input type="password" id="pass" placeholder="Password">
-            </div>
-            <div class="field">
-              <div class="ui checkbox" id="errors">
-              </div>
-            </div>
-            <button class="ui button" type="button" onclick="steemlogin()">Login</button>
-          </form>
         </div>
-      </div>
     </div>
-  <div class="two wide column"></div>
-</div>
+    <div class="ui grid">
+        <div class="two wide column"></div>
+        <div class="twelve wide column">
+            <div class="ui tab active" data-tab="first" id="discoverarea">
+                <div class="ui fluid icon input grey" id="statusarea">
+                    <input type="text" placeholder="Tell us how you really feel" id="statusbox" onkeyup="updatestatus(this, event)">
+                    <i class="send icon"></i>
+                </div>
+                <br />
+                <div class="discovertweets">
 
-<script>
-var username = "";
-var password = "";
-var loggedIn = false;
-var unbadazzled = true;
-var login = new window.steemJS.Login();
-login.setRoles(["posting"]);
-var posts = [];
-var sortedPosts = [];
-var num = 0;
-var loginhtml = $("#loginSettings").html();
+                </div>
+                <!--<div class="ui active centered inline loader"></div>-->
+            </div>
 
+            <div class="ui tab" data-tab="second" id="feedarea">
+                <div class="ui fluid icon input grey" id="statusarea">
+                    <input type="text" placeholder="Tell us how you really feel" id="statusbox" onkeyup="updatestatus(this, event)">
+                    <i class="send icon"></i>
+                </div>
+                </br>
+                <div class="feedtweets">
+                    <div class="ui grey fluid card">
+                        <div class="content" id="feedcontent">
+                            Please login first.
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-function linkify(text) {
-    var urlRegex =/(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
-    return text.replace(urlRegex, function(url) {
-        return '<a href="' + url + '">' + url + '</a>';
-    });
-}
+            <div class="ui tab" data-tab="third">
+                <div class="ui fluid icon input grey" id="statusarea">
+                    <input type="text" placeholder="Tell us how you really feel" id="statusbox" onkeyup="updatestatus(this, event)">
+                    <i class="send icon"></i>
+                </div>
+                </br>
+                <div class="storytweets">
+                    <div class="ui grey fluid card">
+                        <div class="content" id="storycontent">
+                            Please login first. Also don't bother logging in because this page doesn't work yet.
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-const options = {
-    // user: "username",
-    // pass: "password",
-    // url: "ws://127.0.0.1:8090",
-    apis: ["database_api", "network_broadcast_api"],
-    url: "wss://node.steem.ws"
-};
+            <div class="ui tab" data-tab="fourth">
+                <div class="ui fluid card">
+                    <div class="content" id="loginSettings">
+                        <form class="ui form">
+                            <div class="field">
+                                <label>Username</label>
+                                <input type="text" id="user" placeholder="Username">
+                            </div>
+                            <div class="field">
+                                <label>Password</label>
+                                <input type="password" id="pass" placeholder="Password">
+                            </div>
+                            <div class="field">
+                                <div class="ui checkbox" id="errors">
+                                </div>
+                            </div>
+                            <button class="ui button" type="button" onclick="steemlogin()">Login</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="two wide column"></div>
+        </div>
 
-function sleep (time) {
-  return new Promise((resolve) => setTimeout(resolve, time));
-}
-
-function fetchDiscover(display){
-  posts = [];
-  num=0;
-  return $.getJSON( "https://api.steemjs.com/getState?path=/trending/screem", function( data ) {
-    $.each( data['content'], function( key, val ) {
-        posts.push({
-          id: num,
-          value: val,
-          key: key
-        });
-        num++;
-    });
-    if(display){
-      redrawArea('.discovertweets');
-    }
-  });
-}
-
-function fetchFeed(display){
-  posts = [];
-  num=0;
-  return $.getJSON( "https://api.steemjs.com/getState?path=/@".concat(username).concat("/feed&scope=content"), function( data ) {
-    $.each( data, function( key, val ) {
-      if(JSON.parse(val['json_metadata'])['tags'].includes("screem")){
-        posts.push({
-          id: num,
-          value: val,
-          key: key
-        });
-        num++;
-      }
-    });
-    if(display){
-      redrawArea(".feedtweets");
-    }
-  });
-}
-
-function fetchStory(display){
-  posts = [];
-  num=0;
-  return $.getJSON( "https://api.steemjs.com/getState?path=/@".concat(username), function( data ) {
-    $.each( data['content'], function( key, val ) {
-      if(JSON.parse(val['json_metadata'])['tags'].includes("screem")){
-        posts.push({
-          id: num,
-          value: val,
-          key: key
-        });
-        num++;
-      }
-    });
-    if(display){
-      redrawArea(".storytweets");
-    }
-  });
-}
-function redrawArea(div){
-  var fade = posts.length*200+200; // posts are added in reverse order... its complicated
-  sortedPosts=posts.slice(); // sortedPosts = posts
-  sortedPosts.sort(function(a, b){ return new Date(a['value']['last_update']).getTime() - new Date(b['value']['last_update']).getTime()}); // sort by date
-  //console.log("Sorted Posts: ".concat(sortedPosts));
-  $(div).empty(); // clear
-  $.each(sortedPosts, function(index, value){
-    //console.log("Entered Each");
-    var text = '\
-    <div class="ui grey fluid card" id="'.concat(value['id']).concat('card" style="display: none;">\
-      <div class="content">\
-        <!--<img class="right floated mini ui image" src="assets/pictures/default_profile.png">-->\
-        <button class="right floated ui grey mini icon button" id="').concat(value['id']).concat('" onclick="vote(\'').concat(value['id']).concat('\')"><i class="heart icon"></i></button>\
-        <div class="ui horizontal list">\
-        <div class="item" onclick="showControls(').concat(value['id']).concat(')">\
-          <img class="ui mini circular image" src="assets/pictures/default_profile.png">\
-          <div class="content" style="padding-right: 1em;">\
-            <div class="ui sub header">').concat(value['value']['author']).concat('</div>\
-            ').concat(timeSince(new Date(value['value']['last_update']))).concat(' ago</div>\
-        </div>\
-        <a style="display: none;" class="ui tiny label ').concat(value['id']).concat('header" id="').concat(value['id']).concat('header" onclick="follow(').concat(value['id']).concat(')"><i class="Pied Piper Hat icon"></i> Follow</a>\
-        <a style="display: none;" class="ui tiny label ').concat(value['id']).concat('header" id="').concat(value['id']).concat('header" onclick="hide(').concat(value['id']).concat(')"><i class="hide icon"></i> Hide</a>\
-        </div>\
-        <!--\
-        <p onclick="showControls(').concat(value['id']).concat(')">').concat(value['value']['author']).concat('\
-          <a style="display: none;" class="ui tiny label ').concat(value['id']).concat('header" id="').concat(value['id']).concat('header" onclick="follow(').concat(value['id']).concat(')"><i class="Pied Piper Hat icon"></i> Follow</a>\
-          <a style="display: none;" class="ui tiny label ').concat(value['id']).concat('header" id="').concat(value['id']).concat('header" onclick="hide(').concat(value['id']).concat(')"><i class="hide icon"></i> Hide</a>\
-        </div>\
-        \
-        <div class="meta">\
-          ').concat(timeSince(new Date(value['value']['last_update']))).concat(' ago\
-        </div> -->\
-        <div class="description">\
-    ').concat(linkify(value['value']['title'])).concat('\
-    <div class="basic right floated label"><i class="dollar icon"></i>').concat(value['value']['total_pending_payout_value']).concat('</div>\
-    </div>\
-    </div>\
-    <!--<div class="extra content">\
-    <div class="ui left floated labeled button" tabindex="0">\
-      <!--<div class="ui grey mini button">\
-        <i class="heart icon"></i>Like\
-      </div>\
-      <a class="ui basic grey left pointing label">\
-    ').concat(value['value']['net_votes']).concat('\
-    </a>\
-  </div>-->\
-  </div>\
-  </div>')
-    var $newdiv = $(text);
-    $(div).prepend($newdiv);
-    $newdiv.fadeIn(fade);
-    fade=fade-200;
-    $.each(value['value']['active_votes'], function (key, val){
-      if(loggedIn && val['voter'] == username){
-        //console.log(value['id']);
-        $("#".concat(value['id']).concat("card")).toggleClass("grey red");
-        $("#".concat(value['id'])).toggleClass("grey red");
-      }
-    });
-  });
-}
-
-function reloadDiscover(){
-  fetchDiscover(true);
-}
-function reloadFeed(){
-  if(loggedIn){
-    fetchFeed(true);
-  }
-}
-function reloadStory(){
-  if(loggedIn){
-    fetchStory(true);
-  }
-}
-$('[data-tab="first"][class="item"]').on('click', reloadDiscover);
-$('[data-tab="second"][class="item"]').on('click', reloadFeed);
-$('[data-tab="third"][class="item"]').on('click', reloadStory);
-
-$("#search").keyup(function(event){
-    if(event.keyCode == 13){ //enter key was pressed at search
-    }
-});
+        <script>
+            var username = "";
+            var password = "";
+            var loggedIn = false;
+            var unbadazzled = true;
+            var login = new window.steemJS.Login();
+            login.setRoles(["posting"]);
+            var posts = [];
+            var sortedPosts = [];
+            var num = 0;
+            var mThread = "";
+            var loginhtml = $("#loginSettings").html();
 
 
-function removeChars(validChars, inputString) {
-    var regex = new RegExp('[^' + validChars + ']', 'g');
-    return inputString.replace(regex, '');
-}
-
-function timeSince(date) {
-
-    var seconds = Math.floor((new Date() - date) / 1000);
-
-    var interval = Math.floor(seconds / 31536000);
-
-    if (interval > 1) {
-        return interval + " years";
-    }
-    interval = Math.floor(seconds / 2592000);
-    if (interval > 1) {
-        return interval + " months";
-    }
-    interval = Math.floor(seconds / 86400);
-    if (interval > 1) {
-        return interval + " days";
-    }
-    interval = Math.floor(seconds / 3600);
-    if (interval > 1) {
-        return interval + " hours";
-    }
-    interval = Math.floor(seconds / 60);
-    if (interval > 1) {
-        return interval + " minutes";
-    }
-    return Math.floor(seconds) + " seconds";
-}
-
-function updatestatus(ele, e){
-  if(e.keyCode == 13) {
-    if(loggedIn){
-      let tr = new window.steemJS.TransactionBuilder();
-      var thewordofgod = ele.value;
-      var permlink = removeChars('abcdefghijklmnopqrstuvwxyz1234567890-',ele.value.slice(0,20).replace(" ", "-"))
-      //console.log(removeChars('abcdefghijklmnopqrstuvwxyz1234567890-',ele.value.slice(0,20).replace(" ", "-")));
-      //console.log('{"tags":["spam"], "created":"'.concat(Math.round(+new Date()/1000).toString()).concat('", "used-by":"peek"}'));
-      try{
-        tr.add_type_operation("comment", {
-          parent_author: "",
-          parent_permlink: "screem",
-          author: username,
-          permlink: permlink,
-          title: ele.value,
-          body: ele.value.concat(" CREATED BY SCREEM V0.2 https://steemit.com/steem/@picokernel/alpha-v2-introducing-screem-feeds-followers-settings-oh-my"),
-          json_metadata: '{"tags":["screem"], "created":"'.concat(Math.round(+new Date()/1000).toString()).concat('", "used-by":"screem"}')
-        });
-        tr.process_transaction(login, null, true);
-        tr.add_type_operation("vote", {
-            voter: username,
-            author: username,
-            permlink: permlink,
-            weight: 10000
-        });
-        tr.process_transaction(login, null, true);
-        document.getElementById("statusbox").value = "";
-        var $newdiv = $('\
-        <div class="ui red fluid card" style="display: none;">\
-          <div class="content">\
-            <!--<img class="right floated mini ui image" src="assets/pictures/default_profile.png">-->\
-            <button class="right floated ui red mini icon button"><i class="heart icon"></i></button>\
-            <div class="header">\
-            '.concat(username).concat('\
-            </div>\
-            <div class="meta">\
-              Just now\
-            </div>\
-            <div class="description">\
-            ').concat(thewordofgod).concat('\
-        <div class="basic right floated label"><i class="dollar icon"></i>$0.00 SBD</div>\
-        </div>\
-        </div>\
-      </div>\
-      </div>\
-        '));
-        $('.discovertweets').prepend($newdiv);
-        $('.feedtweets').prepend($newdiv);
-        $newdiv.fadeIn(1000);
-      }
-      catch(err){
-        $('#discoverarea').prepend('<div class="ui pointing below red label" id="login-nag">'.concat(err).concat('</div>'));
-      }
-    }
-    else{
-      $('#discoverarea').prepend('<div class="ui pointing below red label" id="login-nag">Please log in first</div>');
-    }
-  }
-}
-function populateFollowers(){
-  $.getJSON( "https://api.steemjs.com/getFollowers?following=".concat(username).concat("&startFollower=0&limit=100&followType=blog"), function( data ) {
-    $.each( data, function( index, val ) {
-      //console.log(val);
-      $("#followers").append('\
-      <div class="item">\
-          <div class="right floated content">\
-            <div class="ui mini button">Follow Back</div>\
-          </div>\
-          <img class="ui avatar image" src="assets/pictures/default_profile.png">\
-          <div class="content">\
-            '.concat(val['follower']).concat('\
-          </div>\
-        </div>\
-      '));
-    }); // Each
-  }); // GetJson
-}
-function steemlogout(){
-  login = new window.steemJS.Login();
-  $("#loginSettings").html(loginhtml); // reset form.
-  $("#loginButton").html('<img src="assets/pictures/login_off.svg">');
-  localStorage.removeItem("username");
-  localStorage.removeItem("password");
-}
-function steemlogin(){
-  var loginSettingsHtml = '\
-  <center><h2 class="ui header">Followers</h2></center><div class="ui middle aligned divided list" id="followers"></div>\
-  <div class="ui divider"></div>\
-  <center><button class="ui center button" type="button" onclick="steemlogout()">Log out</button></center>\
-  '
-  localStorage.setItem("loggedOut", "true");
-  if (localStorage.getItem("username") === null && document.getElementById("user").value !== "") { // check if input box if filled in
-    username = document.getElementById("user").value;
-    password = document.getElementById("pass").value;
-  }
-  else if(localStorage.getItem("username") !== null){
-    username = localStorage.getItem("username");
-    password = localStorage.getItem("password");
-  }
-  else{
-    //console.log("Got loggedOut at else");
-    return; // we are not logging in today...
-  }
-  var Api = window.steemJS.steemRPC.Client.get(options, true);
-  Api.initPromise.then(function(res){
-    Api.database_api().exec("get_accounts", [[username]]).then(function(res) {
-      var account = res[0];
-      try{
-        let success = login.checkKeys({
-            accountName: username,
-            password: password,
-            auths: {
-                owner: account.owner.key_auths,
-                active: account.active.key_auths,
-                posting: account.posting.key_auths
-            }});
-            if(success){ // we're in.
-              document.getElementById("errors").innerHTML = '<div class="ui green basic label">Success</div>';
-              $("#loginButton").html('<img src="assets/pictures/login_on.svg">');
-              $("#loginSettings").html(loginSettingsHtml);
-              if(localStorage.getItem("username") === null){
-                localStorage.setItem("username", username); //save it all
-                localStorage.setItem("password", password);
-              }
-              $('#login-nag').remove();
-              populateFollowers();
-              loggedIn=true;
+            function linkify(text) {
+                var urlRegex = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+                return text.replace(urlRegex, function(url) {
+                    return '<a href="' + url + '">' + url + '</a>';
+                });
             }
-            else{ // user entered the wrong credentials.
-              document.getElementById("errors").innerHTML = '<div class="ui red basic label">Error: Incorrect username or password</div>';
+
+            const options = {
+                // user: "username",
+                // pass: "password",
+                // url: "ws://127.0.0.1:8090",
+                apis: ["database_api", "network_broadcast_api"],
+                url: "wss://node.steem.ws"
+            };
+
+            function sleep(time) {
+                return new Promise((resolve) => setTimeout(resolve, time));
             }
-        }
-        catch(err){
-          document.getElementById("errors").innerHTML = '<div class="ui red basic label">'.concat(err).concat('</div>');
-        }
-    });
-  });
-}
-function follow(id){
-  if(true){
-    alert("This feature is currently disabled cause it's broken. Like grammy.");
-    //disabled until it works
-  }
-  else{
-    if(loggedIn){
-      //console.log("{\"follower\":\"".concat(username).concat('\", \"following\":\"').concat(posts[id]['key'].split("/")[0]).concat('\",what:[\"blog\"]}'));
-      try{
-        $("#".concat(id).concat("card")).toggleClass("grey red");
-        $("#".concat(id)).toggleClass("grey red");
-        let tr = new window.steemJS.TransactionBuilder();
-        tr.add_type_operation("custom_json", {
-            id: "follow",
-            json: "{\"follower\":\"".concat(username).concat('\", \"following\":\"').concat(posts[id]['key'].split("/")[0]).concat('\",what:[\"blog\"]}')
-        });
-        tr.process_transaction(login, null, true);
-      }
-      catch(err){
-        $('#'.concat(id)).html(err.message);
-      }
 
-    }
-    else{
-      $('#'.concat(id)).html("log in first");
-    }
-  }
-}
-function vote(id){
-  if(loggedIn){
-    $("#".concat(id).concat("card")).toggleClass("grey red");
-    $("#".concat(id)).toggleClass("grey red");
-    let tr = new window.steemJS.TransactionBuilder();
-    tr.add_type_operation("vote", {
-        voter: username,
-        author: posts[id]['key'].split("/")[0],
-        permlink: posts[id]['key'].split("/")[1],
-        weight: 10000
-    });
-    tr.process_transaction(login, null, true);
-  }
-  else{
-    $('#'.concat(id)).html("log in first");
-  }
-}
-function showControls(id){
-  $('.'.concat(id).concat('header')).toggle();
-}
+            function fetchDiscover(display) {
+                posts = [];
+                num = 0;
+                return $.getJSON("https://api.steemjs.com/getState?path=/trending/screem".concat("&scope=content"), function(data) {
+                    //console.log(data);
+                    $.each(data, function(index, val) {
+                        if (val['author'] === "picokernel" && val['title'].includes("[MasterThread]")) {
+                            //console.log("https://api.steemjs.com/getState?path=/screem/@".concat(val['author']).concat("/").concat(val['permlink']).concat("&scope=content"));
+                            $.getJSON("https://api.steemjs.com/getState?path=/screem/@".concat(val['author']).concat("/").concat(val['permlink']).concat("&scope=content"), function(data2) {
+                                $.each(data2, function(key, value) {
+                                    if (value['depth'] === 1) {
+                                        //console.log(key, value);
+                                        posts.push({
+                                            id: num,
+                                            value: value,
+                                            key: key
+                                        });
+                                        num++;
+                                    }
+                                });
+                                if (display) {
+                                    console.log("----------------------------------- GOT TO DISPLAY");
+                                    redrawArea('.discovertweets');
+                                }
+                            });
+                        }
+                    });
+                });
+            }
 
-function initsite(){
-  steemlogin();
-  reloadDiscover();
-}
+            function fetchFeed(display) {
+                posts = [];
+                num = 0;
+                return $.getJSON("https://api.steemjs.com/getState?path=/@".concat(username).concat("/feed&scope=content"), function(data) {
+                    try {
+                        $.each(data, function(key, val) {
+                            if (JSON.parse(val['json_metadata'])['used-by'] === "screem") {
+                                posts.push({
+                                    id: num,
+                                    value: val,
+                                    key: key
+                                });
+                                num++;
+                            }
+                        });
+                    } catch (err) {
+                        console.log("Error fetching feed json data: ".concat(err));
+                    }
+                    if (display) {
+                        redrawArea(".feedtweets");
+                    }
+                });
+            }
 
-initsite();
-</script>
+            function fetchStory(display) {
+                posts = [];
+                num = 0;
+                console.log("https://api.steemjs.com/getState?path=/@".concat(username).concat('/posts&scope=content'));
+                return $.getJSON("https://api.steemjs.com/getState?path=/@".concat(username).concat('/posts&scope=content'), function(data) {
+                    try {
+                        $.each(data, function(key, val) {
+                            //console.log(val);
+                            if (JSON.parse(val['json_metadata'])['used-by'] === "screem") {
+                                posts.push({
+                                    id: num,
+                                    value: val,
+                                    key: key
+                                });
+                                num++;
+                            }
+                        });
+                    } catch (err) {
+                        console.log("Error fetching story json data: ".concat(err));
+                    }
+                    if (display) {
+                        redrawArea(".storytweets");
+                    }
+                });
+            }
+
+            function redrawArea(div) {
+                var fade = posts.length * 200 + 200; // posts are added in reverse order... its complicated
+                sortedPosts = posts.slice(); // sortedPosts = posts
+                sortedPosts.sort(function(a, b) {
+                    return new Date(a['value']['last_update']).getTime() - new Date(b['value']['last_update']).getTime()
+                }); // sort by date
+                //console.log(sortedPosts);
+                $(div).empty(); // clear
+                $.each(sortedPosts, function(index, value) {
+                    console.log(value);
+                    console.log(value['value']['author']);
+                    //console.log("Entered Each");
+                    var text = '\
+                        <div class="ui grey fluid card" id="'.concat(value['id']).concat('card" style="display: none;">\
+                          <div class="content">\
+                            <!--<img class="right floated mini ui image" src="assets/pictures/default_profile.png">-->\
+                            <button class="right floated ui grey mini icon button" id="').concat(value['id']).concat('" onclick="vote(\'').concat(value['id']).concat('\')"><i class="heart icon"></i></button>\
+                            <div class="ui horizontal list">\
+                            <div class="item" onclick="showControls(').concat(value['id']).concat(')">\
+                              <img class="ui mini circular image" src="assets/pictures/default_profile.png">\
+                              <div class="content" style="padding-right: 1em;">\
+                                <div class="ui sub header">').concat(value['value']['author']).concat('</div>\
+                                ').concat(timeSince(new Date(value['value']['last_update']))).concat(' ago</div>\
+                            </div>\
+                            <a style="display: none;" class="ui tiny label ').concat(value['id']).concat('header" id="').concat(value['id']).concat('header" onclick="follow(').concat(value['id']).concat(')"><i class="Pied Piper Hat icon"></i> Follow</a>\
+                            <a style="display: none;" class="ui tiny label ').concat(value['id']).concat('header" id="').concat(value['id']).concat('header" onclick="hide(').concat(value['id']).concat(')"><i class="hide icon"></i> Hide</a>\
+                            </div>\
+                            <!--\
+                            <p onclick="showControls(').concat(value['id']).concat(')">').concat(value['value']['author']).concat('\
+                              <a style="display: none;" class="ui tiny label ').concat(value['id']).concat('header" id="').concat(value['id']).concat('header" onclick="follow(').concat(value['id']).concat(')"><i class="Pied Piper Hat icon"></i> Follow</a>\
+                              <a style="display: none;" class="ui tiny label ').concat(value['id']).concat('header" id="').concat(value['id']).concat('header" onclick="hide(').concat(value['id']).concat(')"><i class="hide icon"></i> Hide</a>\
+                            </div>\
+                            \
+                            <div class="meta">\
+                              ').concat(timeSince(new Date(value['value']['last_update']))).concat(' ago\
+                            </div> -->\
+                            <div class="description">\
+                        ').concat(linkify(value['value']['body'])).concat('\
+                        <div class="basic right floated label"><i class="dollar icon"></i>').concat(value['value']['total_pending_payout_value']).concat('</div>\
+                        </div>\
+                        </div>\
+                        <!--<div class="extra content">\
+                        <div class="ui left floated labeled button" tabindex="0">\
+                          <!--<div class="ui grey mini button">\
+                            <i class="heart icon"></i>Like\
+                          </div>\
+                          <a class="ui basic grey left pointing label">\
+                        ').concat(value['value']['net_votes']).concat('\
+                        </a>\
+                      </div>-->\
+                      </div>\
+                      </div>');
+                    var $newdiv = $(text);
+                    $(div).prepend($newdiv);
+                    $newdiv.fadeIn(fade);
+                    fade = fade - 200;
+                    $.each(value['value']['active_votes'], function(key, val) {
+                        if (loggedIn && val['voter'] == username) {
+                            //console.log(value['id']);
+                            $("#".concat(value['id']).concat("card")).toggleClass("grey red");
+                            $("#".concat(value['id'])).toggleClass("grey red");
+                        }
+                    });
+                });
+            }
+
+            function reloadDiscover() {
+                fetchDiscover(true);
+            }
+
+            function reloadFeed() {
+                if (loggedIn) {
+                    fetchFeed(true);
+                }
+            }
+
+            function reloadStory() {
+                if (loggedIn) {
+                    fetchStory(true);
+                }
+            }
+            $('[data-tab="first"][class="item"]').on('click', reloadDiscover);
+            $('[data-tab="second"][class="item"]').on('click', reloadFeed);
+            $('[data-tab="third"][class="item"]').on('click', reloadStory);
+
+            $("#search").keyup(function(event) {
+                if (event.keyCode == 13) { //enter key was pressed at search
+                }
+            });
+
+
+            function removeChars(validChars, inputString) {
+                var regex = new RegExp('[^' + validChars + ']', 'g');
+                return inputString.replace(regex, '');
+            }
+
+            function timeSince(date) {
+
+                var seconds = Math.floor((new Date() - date) / 1000);
+
+                var interval = Math.floor(seconds / 31536000);
+
+                if (interval > 1) {
+                    return interval + " years";
+                }
+                interval = Math.floor(seconds / 2592000);
+                if (interval > 1) {
+                    return interval + " months";
+                }
+                interval = Math.floor(seconds / 86400);
+                if (interval > 1) {
+                    return interval + " days";
+                }
+                interval = Math.floor(seconds / 3600);
+                if (interval > 1) {
+                    return interval + " hours";
+                }
+                interval = Math.floor(seconds / 60);
+                if (interval > 1) {
+                    return interval + " minutes";
+                }
+                return Math.floor(seconds) + " seconds";
+            }
+
+            function updatestatus(ele, e) {
+                if (e.keyCode == 13) {
+                    if (loggedIn) {
+                        let tr = new window.steemJS.TransactionBuilder();
+                        var thewordofgod = ele.value;
+                        var permlink = removeChars('abcdefghijklmnopqrstuvwxyz1234567890-', ele.value.slice(0, 20).replace(" ", "-"))
+                            //console.log(removeChars('abcdefghijklmnopqrstuvwxyz1234567890-',ele.value.slice(0,20).replace(" ", "-")));
+                            //console.log('{"tags":["spam"], "created":"'.concat(Math.round(+new Date()/1000).toString()).concat('", "used-by":"peek"}'));
+                        try {
+                            tr.add_type_operation("comment", {
+                                parent_author: "",
+                                parent_permlink: "screem",
+                                author: username,
+                                permlink: permlink,
+                                title: ele.value,
+                                body: ele.value.concat(" <a href="">CREATED BY SCREEM V0.3 https://steemit.com/steem/@picokernel/alpha-v2-introducing-screem-feeds-followers-settings-oh-my"),
+                                json_metadata: '{"tags":["screem"], "created":"'.concat(Math.round(+new Date() / 1000).toString()).concat('", "used-by":"screem"}')
+                            });
+                            tr.process_transaction(login, null, true);
+                            tr.add_type_operation("vote", {
+                                voter: username,
+                                author: username,
+                                permlink: permlink,
+                                weight: 10000
+                            });
+                            tr.process_transaction(login, null, true);
+                            document.getElementById("statusbox").value = "";
+                            var $newdiv = $('\
+                                <div class="ui red fluid card" style="display: none;">\
+                                    <div class="content">\
+                                            <!--<img class="right floated mini ui image" src="assets/pictures/default_profile.png">-->\
+                                            <button class="right floated ui red mini icon button"><i class="heart icon"></i></button>\
+                                            <div class="header">\
+                                                '.concat(username).concat('\
+                                            </div>\
+                                            <div class="meta">\
+                                              Just now\
+                                            </div>\
+                                            <div class="description">\
+                                                ').concat(thewordofgod).concat('\
+                                                <div class="basic right floated label"><i class="dollar icon"></i>$0.00 SBD</div>\
+                                                </div>\
+                                            </div>\
+                                    </div>\
+                                </div>\
+                                '));
+                            $('.discovertweets').prepend($newdiv);
+                            $('.feedtweets').prepend($newdiv);
+                            $newdiv.fadeIn(1000);
+                        } catch (err) {
+                            $('#discoverarea').prepend('<div class="ui pointing below red label" id="login-nag">'.concat(err).concat('</div>'));
+                        }
+                    } else {
+                        $('#discoverarea').prepend('<div class="ui pointing below red label" id="login-nag">Please log in first</div>');
+                    }
+                }
+            }
+
+            function populateFollowers() {
+                $.getJSON("https://api.steemjs.com/getFollowers?following=".concat(username).concat("&startFollower=0&limit=100&followType=blog"), function(data) {
+                    $.each(data, function(index, val) {
+                        //console.log(val);
+                        $("#followers").append('\
+                            <div class="item">\
+                              <div class="right floated content">\
+                                <div class="ui mini button">Follow Back</div>\
+                              </div>\
+                            <img class="ui avatar image" src="assets/pictures/default_profile.png">\
+                            <div class="content">\
+                            '.concat(val['follower']).concat('\
+                            </div>\
+                            </div>\
+                      '));
+                    }); // Each
+                }); // GetJson
+            }
+
+            function steemlogout() {
+                login = new window.steemJS.Login();
+                $("#loginSettings").html(loginhtml); // reset form.
+                $("#loginButton").html('<img src="assets/pictures/login_off.svg">');
+                localStorage.removeItem("username");
+                localStorage.removeItem("password");
+            }
+
+            function steemlogin() {
+                var loginSettingsHtml = '\
+                  <center><h2 class="ui header">Followers</h2></center><div class="ui middle aligned divided list" id="followers"></div>\
+                  <div class="ui divider"></div>\
+                  <center><button class="ui center button" type="button" onclick="steemlogout()">Log out</button></center>\
+                  '
+                localStorage.setItem("loggedOut", "true");
+                if (localStorage.getItem("username") === null && document.getElementById("user").value !== "") { // check if input box if filled in
+                    username = document.getElementById("user").value;
+                    password = document.getElementById("pass").value;
+                } else if (localStorage.getItem("username") !== null) {
+                    username = localStorage.getItem("username");
+                    password = localStorage.getItem("password");
+                } else {
+                    //console.log("Got loggedOut at else");
+                    return; // we are not logging in today...
+                }
+                var Api = window.steemJS.steemRPC.Client.get(options, true);
+                Api.initPromise.then(function(res) {
+                    Api.database_api().exec("get_accounts", [
+                        [username]
+                    ]).then(function(res) {
+                        var account = res[0];
+                        try {
+                            let success = login.checkKeys({
+                                accountName: username,
+                                password: password,
+                                auths: {
+                                    owner: account.owner.key_auths,
+                                    active: account.active.key_auths,
+                                    posting: account.posting.key_auths
+                                }
+                            });
+                            if (success) { // we're in.
+                                document.getElementById("errors").innerHTML = '<div class="ui green basic label">Success</div>';
+                                $("#loginButton").html('<img src="assets/pictures/login_on.svg">');
+                                $("#loginSettings").html(loginSettingsHtml);
+                                if (localStorage.getItem("username") === null) {
+                                    localStorage.setItem("username", username); //save it all
+                                    localStorage.setItem("password", password);
+                                }
+                                $('#login-nag').remove();
+                                populateFollowers();
+                                loggedIn = true;
+                            } else { // user entered the wrong credentials.
+                                document.getElementById("errors").innerHTML = '<div class="ui red basic label">Error: Incorrect username or password</div>';
+                            }
+                        } catch (err) {
+                            document.getElementById("errors").innerHTML = '<div class="ui red basic label">'.concat(err).concat('</div>');
+                        }
+                    });
+                });
+            }
+
+            function follow(id) {
+                if (true) {
+                    alert("This feature is currently disabled cause it's broken. Like grammy.");
+                    //disabled until it works
+                } else {
+                    if (loggedIn) {
+                        //console.log("{\"follower\":\"".concat(username).concat('\", \"following\":\"').concat(posts[id]['key'].split("/")[0]).concat('\",what:[\"blog\"]}'));
+                        try {
+                            $("#".concat(id).concat("card")).toggleClass("grey red");
+                            $("#".concat(id)).toggleClass("grey red");
+                            let tr = new window.steemJS.TransactionBuilder();
+                            tr.add_type_operation("custom_json", {
+                                id: "follow",
+                                json: "{\"follower\":\"".concat(username).concat('\", \"following\":\"').concat(posts[id]['key'].split("/")[0]).concat('\",what:[\"blog\"]}')
+                            });
+                            tr.process_transaction(login, null, true);
+                        } catch (err) {
+                            $('#'.concat(id)).html(err.message);
+                        }
+
+                    } else {
+                        $('#'.concat(id)).html("log in first");
+                    }
+                }
+            }
+
+            function vote(id) {
+                if (loggedIn) {
+                    $("#".concat(id).concat("card")).toggleClass("grey red");
+                    $("#".concat(id)).toggleClass("grey red");
+                    let tr = new window.steemJS.TransactionBuilder();
+                    tr.add_type_operation("vote", {
+                        voter: username,
+                        author: posts[id]['key'].split("/")[0],
+                        permlink: posts[id]['key'].split("/")[1],
+                        weight: 10000
+                    });
+                    tr.process_transaction(login, null, true);
+                } else {
+                    $('#'.concat(id)).html("log in first");
+                }
+            }
+
+            function showControls(id) {
+                $('.'.concat(id).concat('header')).toggle();
+            }
+            function getLastMasterThread(){
+                //Get the straight dope
+                $.getJSON("https://api.steemjs.com/getState?path=/@picokernel/posts&scope=content", function(data) {
+                    var mThreads = []
+                    $.each(data, function(index, val) {
+                        console.log(val['title']);
+                        if(val['title'].includes("[MasterThread]")){
+                            console.log("Found the MasterThread");
+                            mThreads.push(val['permlink']);
+                        }
+                    });
+                    mThreads.sort(function(a, b) {
+                        return new Date(a['value']['last_update']).getTime() - new Date(b['value']['last_update']).getTime()
+                    }); // sort by date
+                    console.log("Mthreads:");
+                    console.log(mThreads);
+                    mThread=mThreads[0]; //TODO: Check if this works
+                });
+            }
+            function initsite() {
+                steemlogin();
+                getLastMasterThread();
+                reloadDiscover();
+            }
+
+            initsite();
+        </script>
 </body>
+
 </html>
