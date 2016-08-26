@@ -14,10 +14,12 @@
   <link href="css/jquery-ui.css" rel="stylesheet" type="text/css">
   <link href="css/range.css" rel="stylesheet" type="text/css">
   <link href="assets/pictures/steem.png" rel="shortcut icon" type="image/png">
-  <script src="javascript/jquery-3.1.0.min.js">
-  </script>
-  <script src="//code.jquery.com/ui/1.12.0/jquery-ui.min.js">
-  </script>
+  <!--<script src="javascript/jquery-3.1.0.min.js">
+  //</script>-->
+  <script   src="https://code.jquery.com/jquery-3.0.0.js"   integrity="sha256-jrPLZ+8vDxt2FnE1zvZXCkCcebI/C8Dt5xyaQBjxQIo="   crossorigin="anonymous"></script>
+ <!-- <script src="javascript/jquery-ui.min.js">
+ </script>-->
+ <script   src="https://code.jquery.com/ui/1.12.0/jquery-ui.js"   integrity="sha256-0YPKAwZP7Mp3ALMRVB2i8GXeEndvCq3eSl/WsAl1Ryk="   crossorigin="anonymous"></script>
   <script src="javascript/steemjs-lib.min.js">
   </script>
   <script src="javascript/fuse.min.js">
@@ -32,6 +34,11 @@
     });
   </script>
   <style>
+    body {
+      background-image: url("assets/pictures/background.png");
+      background-repeat: repeat;
+    }
+
     .last.container {
       margin-bottom: 300px !important;
     }
@@ -145,7 +152,7 @@
 
 
               <div class="field">
-                <div class="ui checkbox" id="errors">
+                <div class="ui label" id="errors">
                 </div>
               </div>
               <button class="ui button" onclick="steemlogin()" type="button">Login</button>
@@ -175,13 +182,15 @@
       var loggedIn = false;
       var unbadazzled = true;
       var login = new window.steemJS.Login();
-      login.setRoles(["posting"]);
+      login.setRoles(["posting", "active"]);
       var posts = [];
       var sortedPosts = [];
       var following = [];
       var num = 0;
       var mThread = "";
       var loginhtml = $("#loginSettings").html();
+
+      var account = null;
 
       function getHashTags(inputText) {  
         var regex = /(?:^|\s)(?:#)([a-zA-Z\d]+)/gm;
@@ -288,9 +297,9 @@
               $.getJSON("https://api.steemjs.com/getState?path=/screem/@".concat(val['author']).concat("/").concat(val['permlink']).concat("&scope=content"), function (data2) {
                 $.each(data2, function (key, value) {
                   if (value['depth'] == 1 && following.includes(value['author']) && JSON.parse(value['json_metadata'])['used-by'] == "screem"){ //JSON.parse(val['json_metadata'])['used-by'] === "screem"
-                    console.log(value['body']);
-                    console.log( JSON.parse(value['json_metadata'])['used-by'] );
-                    console.log( JSON.parse(value['json_metadata'])['used-by']=="screem");
+                    
+                   
+                  
                     posts.push({
                       id: num,
                       value: value,
@@ -310,7 +319,6 @@
       function fetchStory(display) {
         posts = [];
         num = 0;
-        
         return $.getJSON("https://api.steemjs.com/getState?path=/@".concat(username).concat('/posts&scope=content'), function (data) {
           try {
             $.each(data, function (key, val) {
@@ -339,6 +347,7 @@
           return new Date(a['value']['last_update']).getTime() - new Date(b['value']['last_update']).getTime()
         }); // sort by date
         $(div).empty(); // clear
+				
         $.each(sortedPosts, function (index, value) {
           var text = '\
                         <div class="ui grey fluid card" id="'.concat(value['id']).concat('card" style="display: none;">\
@@ -347,7 +356,7 @@
                             <button class="right floated ui grey mini icon button" id="').concat(value['id']).concat('" onclick="vote(\'').concat(value['id']).concat('\')"><i class="heart icon"><\/i><\/button>\
                             <div class="ui horizontal list">\
                             <div class="item" onclick="showControls(').concat(value['id']).concat(')">\
-                              <img class="ui mini circular image" src="assets/pictures/default_profile.png">\
+                              <img class="ui mini circular image" id="profile').concat(value['id']).concat(div.slice(1)).concat('"src="assets/pictures/default_profile.png">\
                               <div class="content" style="padding-right: 1em;">\
                                 <div class="ui sub header">').concat(value['value']['author']).concat('<\/div>\
                                 ').concat(timeSince(new Date(value['value']['last_update']))).concat(' ago<\/div>\
@@ -384,8 +393,16 @@
           $(div).prepend($newdiv);
           $newdiv.fadeIn(fade);
           fade = fade - 300;
+					$.getJSON( "http://api.steemjs.com/getState?path=/@".concat(value['value']['author']).concat("&scope=accounts"), function( data ) {
+						if(JSON.parse(data[value['value']['author']]['json_metadata']).hasOwnProperty('screem') && JSON.parse(data[username]['json_metadata'])['screem'].hasOwnProperty('profilePicture')){
+							
+							$("#profile".concat(value['id']).concat(div.slice(1))).attr("src", JSON.parse(data[value['value']['author']]['json_metadata'])['screem']['profilePicture']);
+						}
+						else {
+						}
+					});
           $.each(value['value']['active_votes'], function (key, val) {
-            if (loggedIn && val['voter'] == username) {
+						if (loggedIn && val['voter'] == username) {
               $("#".concat(value['id']).concat("card")).toggleClass("grey red");
               $("#".concat(value['id'])).toggleClass("grey red");
             }
@@ -411,7 +428,8 @@
       $('[data-tab="first"][class="item"]').on('click', reloadDiscover);
       $('[data-tab="second"][class="item"]').on('click', reloadFeed);
       $('[data-tab="third"][class="item"]').on('click', reloadStory);
-
+		
+			
       $("#search").keyup(function (event, e) {
         if (event.keyCode == 13) { //enter key was pressed at search
           fetchSearch(true);
@@ -479,11 +497,11 @@
                                 ');
             var $newdiv = $(text);
             if($('.active').attr("data-tab")==="second"){ // we are on feed
-              console.log("Feed");
+              
               $('.feedtweets').prepend($newdiv);
             }
             if($('.active').attr("data-tab")==="third"){ // we are on story
-              console.log("Story");
+              
               $('.storytweets').prepend($newdiv);
             }
             $newdiv.fadeIn(1000);
@@ -562,15 +580,24 @@
                   <br />\
                   <form class="ui form">\
                   <h1 class="ui dividing header">Settings</h1>\
-                  <div class="ui segments">\
+                  <div class="ui segment"a>\
+                    <p> Voting Power: <span id="vp-display">'.concat(votingpower).concat('</span>\
                   <div class="ui range" id="votingpower"></div>\
-                  <p> Voting Power: <span id="vp-display">'.concat(votingpower).concat('</span>\
+                  </div>\
+                  <div class="ui segment">\
+                    <p> Profile Picture: <span> <div class="ui fluid action input" id="ppinput">\
+                      <input placeholder="Image Url..." type="text" onkeypress="return event.keyCode != 13;" id="ppurl"><!-- Prevent enter -->\
+                      <button onclick="updateAccountPicture()" type="button" class="ui icon button">\
+                        <i class="image icon"></i>\
+                      </button>\
+                    </div>\
+                    </span>\
                   </div>\
                   <div class="ui segment">\
                     <div class="field">\
-                      <div class="ui toggle checkbox">\
-                        <input class="hidden" tabindex="0" name="donate" checked="checked" type="checkbox">\
-                        <label>Support the author</label>\
+                      <div class="ui toggle callback example checkbox">\
+                        <input type="checkbox" checked="checked">\
+                        <label>Support the developer</label>\
                       </div>\
                     </div>\
                   </div>\
@@ -593,7 +620,7 @@
           Api.database_api().exec("get_accounts", [
             [username]
           ]).then(function (res) {
-            var account = res[0];
+            account = res[0];
             var success = false;
             try {
               success = login.checkKeys({
@@ -694,7 +721,7 @@
         var voted = false 
         $.each(posts[id]['value']['active_votes'], function (key, val) {
           if (val['voter'] == username && val['weight']>0) {
-            console.log(val);
+            
             voted = true;
             }
          });
@@ -732,7 +759,27 @@
           $('#'.concat(id).concat("header")).html("<i class='remove user icon' /> Unfollow");
         }
       }
-
+    
+      function updateAccountPicture(){
+        try{
+        let tr = new window.steemJS.TransactionBuilder();
+        let postingAuth = account.posting;
+        tr.add_type_operation("account_update", {
+            account: username,
+            posting: postingAuth,
+            memo_key: account.memo_key, 
+            json_metadata: '{\
+              	              "screem": {\
+                                "profilePicture": "'.concat($('#ppurl').val()).concat('"\
+	                            }\
+                            }')});
+        tr.process_transaction(login, null, true);
+        $("#ppinput").prepend('<div class="ui right pointing green basic label">Success</div>');
+        }
+        catch(err) {
+          $("#ppinput").prepend('<div class="ui right pointing red basic label">Failed To Update: '.concat(err).concat('</div>'));
+        }
+      }
       function getLastMasterThread() {
         //Get the straight dope
         $.getJSON("https://api.steemjs.com/getState?path=/@picokernel&scope=content", function (data) {
@@ -749,11 +796,22 @@
         });
       }
 
+
+    	$('.callback.example').checkbox().first().checkbox({
+				onChecked: function(){
+					localStorage.setItem("donate", true);
+					
+				},
+				onUnchecked: function() {
+					localStorage.setItem("donate", false);
+				}
+			});
+
       function initsite() {
         steemlogin();
         getLastMasterThread();
         reloadDiscover();
-      }
+	      }
 
       initsite();
     </script>
