@@ -394,7 +394,7 @@
           $(div).prepend($newdiv);
           $newdiv.fadeIn(fade);
           fade = fade - 300;
-					$.getJSON( "http://api.steemjs.com/getState?path=/@".concat(value['value']['author']).concat("&scope=accounts"), function( data ) {
+					$.getJSON( "https://api.steemjs.com/getState?path=/@".concat(value['value']['author']).concat("&scope=accounts"), function( data ) {
             try{
 						if(JSON.parse(data[value['value']['author']]['json_metadata']).hasOwnProperty('screem') && JSON.parse(data[value['value']['author']]['json_metadata'])['screem'].hasOwnProperty('profilePicture')){
 							$("#profile".concat(value['id']).concat(div.slice(1))).attr("src", JSON.parse(data[value['value']['author']]['json_metadata'])['screem']['profilePicture']);
@@ -566,7 +566,7 @@
                             <\/div>\
                             <\/div>'));
       
-          $.getJSON( "http://api.steemjs.com/getState?path=/@".concat(val['follower']).concat("&scope=accounts"), function( data ) {
+          $.getJSON( "https://api.steemjs.com/getState?path=/@".concat(val['follower']).concat("&scope=accounts"), function( data ) {
            
 						if(JSON.parse(data[val['follower']]['json_metadata']).hasOwnProperty('screem') && JSON.parse(data[val['follower']]['json_metadata'])['screem'].hasOwnProperty('profilePicture')){
 							$("#follower".concat(index)).attr("src", JSON.parse(data[val['follower']]['json_metadata'])['screem']['profilePicture']);
@@ -834,8 +834,9 @@
 			});
 
       function initsite() {
-        reloadDiscover();
-	getLastMasterThread();
+        getLastMasterThread();
+	reloadDiscover();
+
         steemlogin();
 	}
 
