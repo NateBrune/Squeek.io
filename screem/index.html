@@ -9,7 +9,7 @@
   <!-- Site Properties -->
 
 
-  <title>Screem</title>
+  <title>Squeek</title>
   <link href="semantic/dist/semantic.css" rel="stylesheet" type="text/css">
   <link href="css/jquery-ui.css" rel="stylesheet" type="text/css">
   <link href="css/range.css" rel="stylesheet" type="text/css">
@@ -231,10 +231,10 @@
         num = 0;
         $.tab('change tab', 'fifth');
         $('.item.active').toggleClass('active');
-        return $.getJSON("https://api.steemjs.com/getState?path=/trending30/screem".concat("&scope=content"), function (data) {
+        return $.getJSON("https://api.steemjs.com/getState?path=/trending/screem".concat("&scope=content"), function (data) {
           
         $.each(data, function (index, val) {
-            if (val['author'] === "picokernel" && val['title'].includes("[MasterThread]")) {
+            if (val['author'] === "picokernel" && val['title'].includes("[MasterThread]") && val['title'].indexOf("testing")==-1) {
               $.getJSON("https://api.steemjs.com/getState?path=/screem/@".concat(val['author']).concat("/").concat(val['permlink']).concat("&scope=content"), function (data2) {
                 $.each(data2, function (key, value) {
                   if (value['depth'] === 1 && JSON.parse(value['json_metadata'])['used-by'] === "screem") {
@@ -265,9 +265,9 @@
       function fetchDiscover(display) {
         posts = [];
         num = 0;
-        return $.getJSON("https://api.steemjs.com/getState?path=/trending30/screem".concat("&scope=content"), function (data) {
+        return $.getJSON("https://api.steemjs.com/getState?path=/@picokernel".concat("&scope=content"), function (data) {
           $.each(data, function (index, val) {
-            if (val['author'] === "picokernel" && val['title'].includes("[MasterThread]")) {
+            if (val['author'] === "picokernel" && val['title'].includes("[MasterThread]") && val['title'].indexOf("testing")==-1) {
               $.getJSON("https://api.steemjs.com/getState?path=/screem/@".concat(val['author']).concat("/").concat(val['permlink']).concat("&scope=content"), function (data2) {
                 $.each(data2, function (key, value) {
                   if (value['depth'] === 1 && JSON.parse(value['json_metadata'])['used-by'] === "screem") {
@@ -291,9 +291,9 @@
       function fetchFeed(display) {
         posts = [];
         num = 0;
-        return $.getJSON("https://api.steemjs.com/getState?path=/trending30/screem".concat("&scope=content"), function (data) {
+        return $.getJSON("https://api.steemjs.com/getState?path=/@picokernel".concat("&scope=content"), function (data) {
           $.each(data, function (index, val) {
-            if (val['author'] === "picokernel" && val['title'].includes("[MasterThread]")) {
+            if (val['author'] === "picokernel" && val['title'].includes("[MasterThread]") && val['title'].indexOf("testing")==-1) {
               $.getJSON("https://api.steemjs.com/getState?path=/screem/@".concat(val['author']).concat("/").concat(val['permlink']).concat("&scope=content"), function (data2) {
                 $.each(data2, function (key, value) {
                   if (value['depth'] == 1 && following.includes(value['author']) && JSON.parse(value['json_metadata'])['used-by'] == "screem"){ //JSON.parse(val['json_metadata'])['used-by'] === "screem"
@@ -322,7 +322,7 @@
         return $.getJSON("https://api.steemjs.com/getState?path=/@".concat(username).concat('/posts&scope=content'), function (data) {
           try {
             $.each(data, function (key, val) {
-              if (JSON.parse(val['json_metadata'])['used-by'] === "screem") {
+              if (JSON.parse(val['json_metadata'])['used-by'] === "screem" && key.indexOf("testing")==-1) {
                 posts.push({
                   id: num,
                   value: val,
@@ -332,6 +332,7 @@
               }
             });
           } catch (err) {
+
             console.log("Error fetching story json data: ".concat(err));
           }
           if (display) {
@@ -519,13 +520,13 @@
             let tr = new window.steemJS.TransactionBuilder();
             var cDate = Math.round(+new Date() / 1000).toString();
             var permlink = "re-picokernel-".concat(mThread).concat(cDate);
-            var tags = '"screem",'
-            $.each(getHashTags(thewordofgod), function(index, value){
-              tags.concat('"').concat(value).concat('"');
-              if(index < getHashTags(thewordofgod).length){
-                tags.concat(",");
-              }
-            });
+            var tags = '"screem"'
+            //$.each(getHashTags(thewordofgod), function(index, value){
+            //  tags.concat('"').concat(value).concat('"');
+            //  if(index < getHashTags(thewordofgod).length){
+            //    tags.concat(",");
+            //  }
+            //});
             tr.add_type_operation("comment", {
               parent_author: "picokernel",
               parent_permlink: mThread,
@@ -533,17 +534,17 @@
               permlink: permlink,
               title: thewordofgod.concat(' <a href="https://steemit.com/steem/@picokernel/alpha-v2-introducing-screem-feeds-followers-settings-oh-my">CREATED BY SCREEM V0.3<\/a>'),
               body: thewordofgod,
-              json_metadata: '{"tags":['.concat(tags).concat('], "created":"').concat(Math.round(+new Date() / 1000).toString()).concat('", "used-by":"screem"}')
+              json_metadata: '{"tags":['.concat("screem").concat('], "created":"').concat(Math.round(+new Date() / 1000).toString()).concat('", "used-by":"screem"}')
             });
 
-            tr.process_transaction(login, null, false);
+            tr.process_transaction(login, null, true);
             tr.add_type_operation("vote", {
               voter: username,
               author: username,
               permlink: permlink,
               weight: 10000
             });
-            tr.process_transaction(login, null, false);
+            tr.process_transaction(login, null, true);
           } else {
             $('#discoverarea').prepend('<div class="ui pointing below red label" id="login-nag">Please log in first<\/div>');
           }
@@ -564,14 +565,15 @@
                             ').concat(val['follower']).concat('\
                             <\/div>\
                             <\/div>'));
+      
           $.getJSON( "http://api.steemjs.com/getState?path=/@".concat(val['follower']).concat("&scope=accounts"), function( data ) {
+           
 						if(JSON.parse(data[val['follower']]['json_metadata']).hasOwnProperty('screem') && JSON.parse(data[val['follower']]['json_metadata'])['screem'].hasOwnProperty('profilePicture')){
 							$("#follower".concat(index)).attr("src", JSON.parse(data[val['follower']]['json_metadata'])['screem']['profilePicture']);
 						}
 						else {
 						}
 					});
-
           }); // Each
         }); // GetJson
       } catch(err){}
@@ -806,7 +808,10 @@
         $.getJSON("https://api.steemjs.com/getState?path=/@picokernel&scope=content", function (data) {
           var mThreads = []
           $.each(data, function (index, val) {
-            if (val['title'].includes("[MasterThread]")) {
+	//	console.log(val['title']);
+	//	console.log(val['title'].includes("[MasterThread]") && val['title'].indexOf("testing")==-1);
+            if (val['title'].includes("[MasterThread]") && val['title'].indexOf("testing")==-1) {
+	//	console.log("got into if");
               mThreads.push(val['permlink']);
             }
           });
@@ -829,10 +834,10 @@
 			});
 
       function initsite() {
-        getLastMasterThread();
-        steemlogin();
         reloadDiscover();
-	      }
+	getLastMasterThread();
+        steemlogin();
+	}
 
       initsite();
     </script>
