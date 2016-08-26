@@ -14,12 +14,12 @@
   <link href="css/jquery-ui.css" rel="stylesheet" type="text/css">
   <link href="css/range.css" rel="stylesheet" type="text/css">
   <link href="assets/pictures/steem.png" rel="shortcut icon" type="image/png">
-  <!--<script src="javascript/jquery-3.1.0.min.js">
-  //</script>-->
-  <script   src="https://code.jquery.com/jquery-3.0.0.js"   integrity="sha256-jrPLZ+8vDxt2FnE1zvZXCkCcebI/C8Dt5xyaQBjxQIo="   crossorigin="anonymous"></script>
- <!-- <script src="javascript/jquery-ui.min.js">
- </script>-->
- <script   src="https://code.jquery.com/ui/1.12.0/jquery-ui.js"   integrity="sha256-0YPKAwZP7Mp3ALMRVB2i8GXeEndvCq3eSl/WsAl1Ryk="   crossorigin="anonymous"></script>
+  <script src="javascript/jquery-3.1.0.min.js">
+  </script>
+  <!--<script   src="https://code.jquery.com/jquery-3.0.0.js"   integrity="sha256-jrPLZ+8vDxt2FnE1zvZXCkCcebI/C8Dt5xyaQBjxQIo="   crossorigin="anonymous"></script>-->
+  <script src="javascript/jquery-ui.min.js">
+ </script>
+ <!--<script   src="https://code.jquery.com/ui/1.12.0/jquery-ui.js"   integrity="sha256-0YPKAwZP7Mp3ALMRVB2i8GXeEndvCq3eSl/WsAl1Ryk="   crossorigin="anonymous"></script>-->
   <script src="javascript/steemjs-lib.min.js">
   </script>
   <script src="javascript/fuse.min.js">
@@ -152,7 +152,7 @@
 
 
               <div class="field">
-                <div class="ui label" id="errors">
+                <div class="ui label" style="display: none;" id="errors">
                 </div>
               </div>
               <button class="ui button" onclick="steemlogin()" type="button">Login</button>
@@ -394,12 +394,14 @@
           $newdiv.fadeIn(fade);
           fade = fade - 300;
 					$.getJSON( "http://api.steemjs.com/getState?path=/@".concat(value['value']['author']).concat("&scope=accounts"), function( data ) {
-						if(JSON.parse(data[value['value']['author']]['json_metadata']).hasOwnProperty('screem') && JSON.parse(data[username]['json_metadata'])['screem'].hasOwnProperty('profilePicture')){
-							
+            try{
+						if(JSON.parse(data[value['value']['author']]['json_metadata']).hasOwnProperty('screem') && JSON.parse(data[value['value']['author']]['json_metadata'])['screem'].hasOwnProperty('profilePicture')){
 							$("#profile".concat(value['id']).concat(div.slice(1))).attr("src", JSON.parse(data[value['value']['author']]['json_metadata'])['screem']['profilePicture']);
 						}
 						else {
 						}
+            }
+            catch(err){}
 					});
           $.each(value['value']['active_votes'], function (key, val) {
 						if (loggedIn && val['voter'] == username) {
@@ -419,6 +421,15 @@
           fetchFeed(true);
         }
       }
+
+
+							
+
+
+
+
+
+
 
       function reloadStory() {
         if (loggedIn) {
@@ -540,21 +551,30 @@
       }
 
       function populateFollowers() {
-        $.getJSON("https://api.steemjs.com/getFollowers?following=".concat(username).concat("&startFollower=0&limit=100&followType=blog"), function (data) {
-          $.each(data, function (index, val) {
+      try{
+        $.getJSON("https://api.steemjs.com/getFollowers?following=".concat(username).concat("&startFollower=0&limit=100&followType=blog"), function (data1) {
+          $.each(data1, function (index, val) {
             $("#followers").append('\
                             <div class="item">\
                               <div class="right floated content">\
-                                <div class="ui mini button">Follow Back<\/div>\
+                              <!--<div class="ui mini button">Follow Back<\/div>-->\
                               <\/div>\
-                            <img class="ui avatar image" src="assets/pictures/default_profile.png">\
+                            <img class="ui avatar image" id="follower'.concat(index).concat('" src="assets/pictures/default_profile.png">\
                             <div class="content">\
-                            '.concat(val['follower']).concat('\
+                            ').concat(val['follower']).concat('\
                             <\/div>\
-                            <\/div>\
-                      '));
+                            <\/div>'));
+          $.getJSON( "http://api.steemjs.com/getState?path=/@".concat(val['follower']).concat("&scope=accounts"), function( data ) {
+						if(JSON.parse(data[val['follower']]['json_metadata']).hasOwnProperty('screem') && JSON.parse(data[val['follower']]['json_metadata'])['screem'].hasOwnProperty('profilePicture')){
+							$("#follower".concat(index)).attr("src", JSON.parse(data[val['follower']]['json_metadata'])['screem']['profilePicture']);
+						}
+						else {
+						}
+					});
+
           }); // Each
         }); // GetJson
+      } catch(err){}
       }
 
       function populateFollowing() {
@@ -634,6 +654,7 @@
               });
             } catch (err) {
               console.log(err);
+              $("#errors").show();
               document.getElementById("errors").innerHTML = '<div class="ui red basic label">'.concat(err).concat('<\/div>');
             }
             if (success) { // we're in.
@@ -643,7 +664,7 @@
                 if (localStorage.getItem("username") === null) {
                   localStorage.setItem("username", username); //save it all
                   localStorage.setItem("password", password);
-                  localStorage.setItem("votingpower", votingpower);
+                  localStorage.setItem("votingpower", 100);
                   localStorage.setItem("donate", true);
                   localStorage.setItem("mThread", mThread);
                 }
@@ -808,8 +829,8 @@
 			});
 
       function initsite() {
-        steemlogin();
         getLastMasterThread();
+        steemlogin();
         reloadDiscover();
 	      }
 
