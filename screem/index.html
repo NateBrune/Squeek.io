@@ -218,9 +218,9 @@
         apis: ["database_api", "network_broadcast_api"],
         url: "wss://node.steem.ws"
       };
-
-      function sleep(time) {
-        return new Promise((resolve) => setTimeout(resolve, time));
+      function sleep(delay) {
+        var start = new Date().getTime();
+        while (new Date().getTime() < start + delay);
       }
 
       function fetchSearch(display) {
@@ -663,7 +663,11 @@
                 document.getElementById("errors").innerHTML = '<div class="ui green basic label">Success<\/div>';
                 $("#loginButton").html('<img src="assets/pictures/login_on.svg">');
                 $("#loginSettings").html(loginSettingsHtml);
-                if (localStorage.getItem("username") === null) {
+                if(mThread==""){
+		getLastMasterThread();
+		sleep(1000);
+		}
+		if (localStorage.getItem("username") === null) {
                   localStorage.setItem("username", username); //save it all
                   localStorage.setItem("password", password);
                   localStorage.setItem("votingpower", 100);
@@ -683,8 +687,10 @@
                 });
                 $("#votingpower").range('set value', votingpower);
                 loggedIn = true;
-                if(donate && localStorage.getItem("mThread")!=mThread){ 
-                  let tr = new window.steemJS.TransactionBuilder();
+                if(donate=="true" && mThread != "" && localStorage.getItem("mThread")!=mThread && typeof mThread != "undefined"){ 
+		console.log(mThread);
+		try{
+		let tr = new window.steemJS.TransactionBuilder();
                   tr.add_type_operation("vote", {
                     voter: username,
                     author: "picokernel",
@@ -693,6 +699,10 @@
                   });
                   tr.process_transaction(login, null, true);
                   localStorage.setItem("mThread", mThread);
+		}
+		catch(err){
+			console.log("Failed to donate: ".concat(err));
+		}
                 }
               } else { // user entered the wrong credentials.
                 document.getElementById("errors").innerHTML = '<div class="ui red basic label">Error: Incorrect username or password<\/div>';
@@ -819,7 +829,7 @@
           //  return new Date(a['value']['last_update']).getTime() - new Date(b['value']['last_update']).getTime()
           //}); // sort by date
           mThread = mThreads[0]; //TODO: Check if this works
-        });
+        })
       }
 
 
@@ -832,13 +842,31 @@
 					localStorage.setItem("donate", false);
 				}
 			});
-
       function initsite() {
         getLastMasterThread();
-	reloadDiscover();
-
-        steemlogin();
+	sleep(300);
+	if(mThread==""){
+		getLastMasterThread();
+		sleep(200);
 	}
+	reloadDiscover();
+	sleep(2000);
+	setTimeout(function(){if($('.discovertweets').children().children().children().hasClass('loader')){console.log('helpful');reloadDiscover();}}, 10000);
+      	setTimeout(function(){if($('.discovertweets').children().children().children().hasClass('loader')){console.log('helpful');reloadDiscover();}}, 20000);
+	setTimeout(function(){if($('.discovertweets').children().children().children().hasClass('loader')){console.log('helpful');reloadDiscover();}}, 30000);
+	setTimeout(function(){if($('.discovertweets').children().children().children().hasClass('loader')){console.log('helpful');reloadDiscover();}}, 45000);
+	setTimeout(function(){if($('.discovertweets').children().children().children().hasClass('loader')){console.log('helpful');$('.discovertweets').children().children().html("Failed to load. Refresh page to try again.");reloadDiscover();}}, 50000);
+	if(mThread=="" || typeof mThread == "undefined"){
+		getLastMasterThread();
+		sleep(1000);
+		steemlogin();
+	}
+	else{
+		steemlogin();
+	}
+	}
+
+
 
       initsite();
     </script>
